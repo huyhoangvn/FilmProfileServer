@@ -48,7 +48,7 @@ const account = new mongo.Schema({
 });
 
 //Them account
-router.post('/themTaiKhoan', upload.array('hinhAnh',2), async function (req, res, next) {
+router.post('/api/themTaiKhoan', upload.array('hinhAnh',2), async function (req, res, next) {
     const ten = req.body.ten
     const gmail = req.body.gmail
     const matKhau = req.body.matKhau
@@ -57,8 +57,9 @@ router.post('/themTaiKhoan', upload.array('hinhAnh',2), async function (req, res
     const moTa = req.body.moTa
     const hinhAnh = req.files.map(file => file.filename);
     console.log( req)
+    var objId ;
     const ACCOUNT = mongo.model('TaiKhoan', account, 'profile')
-    const data = await ACCOUNT.find();
+
     await ACCOUNT.create({
         ten:ten,
         gmail:gmail,
@@ -67,8 +68,10 @@ router.post('/themTaiKhoan', upload.array('hinhAnh',2), async function (req, res
         gioiTinh:gioiTinh,
         moTa:moTa,
         hinhAnh: hinhAnh
-    })
-    res.render('index', {data: data, message:'Them thanh cong'})
+    }).then(result => {objId = result._id})
+    const data = await ACCOUNT.find({_id: objId});
+
+        res.end(JSON.stringify({ten:data[0].ten}));
 },
     async function (err,req, res,next ) {
         console.log(err)
@@ -86,10 +89,29 @@ router.post('/themTaiKhoan', upload.array('hinhAnh',2), async function (req, res
     }
     );
 
+
 router.get('/', async function (req, res, next) {
   const ACCOUNT = mongo.model('TaiKhoan', account, 'profile');
   const data = await ACCOUNT.find({});
   res.render('index', {title: 'Express', data:data});
+});
+router.get('/api/getPersonalInfo', async function(req, res, next) {
+    const ACCOUNT = mongo.model('TaiKhoan', account, 'profile');
+    const data = await ACCOUNT.find({});
+    const mapping = await data.map((item) => {
+        let urlImg;
+        if (item.hinhAnh == null) {
+            urlImg = ""
+        } else {
+            urlImg = item.hinhAnh;
+        }
+        return {
+            id: item._id,
+            ten: item.ten,
+            hinhAnh: urlImg
+        }
+    })
+    res.end(JSON.stringify(mapping));
 });
 
 module.exports = router;
