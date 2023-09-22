@@ -8,23 +8,23 @@
   <body >
   <!--form dang ki-->
   <div class="row justify-content-center align-content-center">
-    <form class="col-6 text-center" method="post" action="themTaiKhoan" enctype="multipart/form-data" >
+    <form class="col-6 text-center" id="register" method="post" action="themTaiKhoan"  >
       <h1>Register</h1>
       <br>
-      <input name="ten" placeholder="Enter your username">
+      <input id="ten" name="ten" placeholder="Enter your username">
       <br>
       <br>
-      <input name="gmail" placeholder="Enter your email">
+      <input id="gmail" name="gmail" placeholder="Enter your email">
       <br>
       <br>
-      <input type="password" name="matKhau" placeholder="Enter your password">
+      <input id="matKhau" type="password" name="matKhau" placeholder="Enter your password">
       <br>
       <br>
-      <input type="password" name="nhapLai" placeholder="Enter your re-password">
+      <input id="nhapLai" type="password" name="nhapLai" placeholder="Enter your re-password">
       <br>
       <br>
       <div class="row">
-        <button type="submit">CREATE</button>
+        <input type="submit" form="register" value="Create">
       </div>
     </form>
   </div>
