@@ -1,11 +1,45 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+  <body >
+  <!--form dang ki-->
+  <div class="row justify-content-center align-content-center">
+    <form class="col-6 text-center" id="register" method="post" action="themTaiKhoan"  >
+      <h1>Register</h1>
+      <br>
+      <input id="ten" name="ten" placeholder="Enter your username">
+      <br>
+      <br>
+      <input id="gmail" name="gmail" placeholder="Enter your email">
+      <br>
+      <br>
+      <input id="matKhau" type="password" name="matKhau" placeholder="Enter your password">
+      <br>
+      <br>
+      <input id="nhapLai" type="password" name="nhapLai" placeholder="Enter your re-password">
+      <br>
+      <br>
+      <div class="row">
+        <input type="submit" form="register" value="Create">
+      </div>
+    </form>
+  </div>
+<!--  thong bao loi-->
+  <div>
+    <%try{%>
+    <h3><%=message%></h3>
+    <%}catch(Ex){}%>
+  </div>
+  <!--hien thi-->
+  <%for(var i = 0; i < data.length; i++){%>
+  <h4>Ten: <%=data[i].ten%></h4>
+  <h4>Email: <%=data[i].gmail%></h4>
+  <h4>Mat khau: <%=data[i].matKhau%></h4>
+  <h4>Nhap lai mat khau: <%=data[i].nhapLai%></h4>
+  <%}%>
   </body>
 </html>
