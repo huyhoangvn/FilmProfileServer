@@ -6,6 +6,12 @@
           rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   </head>
   <body >
-
+    <label>Tim kiem <a href="/tim" >next </a></label>
+    <%for(var i = 0; i < data.length; i++){%>
+    <h4>Ho ten: <%=data[i].hoTen%></h4>
+    <h4>Gioi tinh: <%=data[i].gioiTinh%></h4>
+    <h4>Ngay sinh: <%=data[i].ngaySinh%></h4>
+    <img src="../uploads/logofpt.png"  alt="images_fail_to_load" class="img-fluid m-2" style="width: 100px;height: 100px">
+    <%}%>
   </body>
 </html>
