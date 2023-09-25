@@ -148,13 +148,12 @@ router.post('/dangNhap', async function (req, res, next) {
     const Account = mongo.model('TaiKhoan', account, 'profile');
     const data = await Account.find({});
     var item = await Account.find({taiKhoan: username, matKhau: password})
-    console.log(item)
     if (item[0] == null){
-        res.render('login', { message: 'sai thong tin dang nhap' , data: data});
+        // res.render('login', { message: 'sai thong tin dang nhap' , data: data});
+        res.end(JSON.stringify({data: {}, message: "dang nhap that bai"}));
     }else if (item[0]._id != null){
         // res.render('dashboard', {title: 'Express', data:data});
-        res.end(JSON.stringify({id:item[0]._id}));
-
+        res.end(JSON.stringify({data:{id:item[0]._id, hoTen:item[0].hoTen, ngaySinh:item[0].ngaySinh, gioiTinh:item[0].gioiTinh, moTa: item[0].moTa}, message:"dang nhap thanh cong"}));
     }
 });
 router.get('/dashboard', async function (req, res, next) {
