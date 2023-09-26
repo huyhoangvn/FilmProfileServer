@@ -6,9 +6,10 @@ var nguoiDungSchema = new Schema({
     matKhau: String,
     hoTen: String,
     ngaySinh:String,
-    gioiTinh:String,
+    gioiTinh:Number,
     moTa:String,
-    hinhAnh: [{type:String}]
+    hinhAnh: [{type:String}],
+    trangThai:Number
 });
 
-module.exports = mongoose.model('NguoiDung', nguoiDungSchema , 'profile');  
+module.exports = mongoose.model('NguoiDung', nguoiDungSchema , 'profile');
