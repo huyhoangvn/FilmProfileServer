@@ -59,22 +59,27 @@ router.post('/api/themTaiKhoan', upload.array('hinhAnh',2), async function (req,
     const gioiTinh = req.body.gioiTinh
     const moTa = req.body.moTa
     // const hinhAnh = req.files.map(file => file.filename);
-    const hinhAnh = 'localhost:3002/uploads/logofpt.png';
+    const hinhAnh = 'https://gratis-dusty-cabinet.glitch.me/uploads/logofpt.png';
     console.log( req)
     var objId ;
     const Account = mongo.model('TaiKhoan', account, 'profile')
+    var item = await Account.find({taiKhoan: taiKhoan})
 
-    await Account.create({
-        taiKhoan:taiKhoan,
-        matKhau:matKhau,
-        hoTen:hoTen,
-        ngaySinh:ngaySinh,
-        gioiTinh:gioiTinh,
-        moTa:moTa,
-        hinhAnh: hinhAnh
-    }).then(result => {objId = result._id})
-    const data = await Account.find({_id: objId});
-    res.end(JSON.stringify({id:data[0]._id}));
+    if (item[0] == null){
+        await Account.create({
+            taiKhoan:taiKhoan,
+            matKhau:matKhau,
+            hoTen:hoTen,
+            ngaySinh:ngaySinh,
+            gioiTinh:gioiTinh,
+            moTa:moTa,
+            hinhAnh: hinhAnh
+        }).then(result => {objId = result._id})
+        const data = await Account.find({_id: objId});
+        res.end(JSON.stringify({id:data[0]._id}));
+    }else{
+        res.end(JSON.stringify({data: {}, message: "dang ki that bai, tai khoan da ton tai"}));
+    }
 },
     async function (err,req, res,next ) {
         console.log(err)
@@ -100,20 +105,26 @@ router.post('/themTaiKhoan', upload.array('hinhAnh',2), async function (req, res
         const gioiTinh = req.body.gioiTinh
         const moTa = req.body.moTa
         // const hinhAnh = req.files.map(file => file.filename);
-        const hinhAnh = 'localhost:3002/uploads/logofpt.png';
+        const hinhAnh = 'https://gratis-dusty-cabinet.glitch.me/uploads/logofpt.png';
         const Account = mongo.model('TaiKhoan', account, 'profile')
+        var item = await Account.find({taiKhoan: taiKhoan})
+        if (item[0] == null){
+            await Account.create({
+                taiKhoan:taiKhoan,
+                matKhau:matKhau,
+                hoTen:hoTen,
+                ngaySinh:ngaySinh,
+                gioiTinh:gioiTinh,
+                moTa:moTa,
+                hinhAnh: hinhAnh
+            });
+            const data = await Account.find();
+            res.render('index', { data: data, message:'them thanh cong!!!'})
+        }else{
+            res.end(JSON.stringify({data: {}, message: "dang ki that bai, tai khoan da ton tai"}));
+        }
 
-        await Account.create({
-            taiKhoan:taiKhoan,
-            matKhau:matKhau,
-            hoTen:hoTen,
-            ngaySinh:ngaySinh,
-            gioiTinh:gioiTinh,
-            moTa:moTa,
-            hinhAnh: hinhAnh
-        });
-        const data = await Account.find();
-        res.render('index', { data: data, message:'them thanh cong!!!'})
+
     },
     async function (err,req, res,next ) {
         console.log(err)
@@ -153,7 +164,7 @@ router.post('/dangNhap', async function (req, res, next) {
         res.end(JSON.stringify({data: {}, message: "dang nhap that bai"}));
     }else if (item[0]._id != null){
         // res.render('dashboard', {title: 'Express', data:data});
-        res.end(JSON.stringify({data:{id:item[0]._id, hoTen:item[0].hoTen, ngaySinh:item[0].ngaySinh, gioiTinh:item[0].gioiTinh, moTa: item[0].moTa}, message:"dang nhap thanh cong"}));
+        res.end(JSON.stringify({data:{id:item[0]._id, hoTen:item[0].hoTen, ngaySinh:item[0].ngaySinh, gioiTinh:item[0].gioiTinh, moTa: item[0].moTa, hinhAnh: item[0].hinhAnh}, message:"dang nhap thanh cong"}));
     }
 });
 router.get('/dashboard', async function (req, res, next) {
