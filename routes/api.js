@@ -14,11 +14,11 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
         const taiKhoan = req.body.taiKhoan
         const matKhau = req.body.matKhau
         const hoTen = req.body.hoTen
-        const hinhAnh = 'https://gratis-dusty-cabinet.glitch.me/uploads/logofpt.png';
+        const hinhAnh = 'https://gratis-dusty-cabinet.glitch.me/public/images/logofpt.png';
         var objId ;
         var item = await NguoiDung.find({taiKhoan: taiKhoan})
 
-        if (item[0] == null){
+        if (item == null){
             await NguoiDung.create({
                 taiKhoan:taiKhoan,
                 matKhau:matKhau,
@@ -63,7 +63,7 @@ router.post('/dangNhap', async function (req, res,next) {
     const query = NguoiDung.where({taiKhoan: username, matKhau: password})
     var item = await query.findOne();
 
-    if (item._id == null){
+    if (item == null){
         res.end(JSON.stringify({data: {}, message: "dang nhap that bai"}));
     }else{
         res.end(JSON.stringify({
@@ -84,11 +84,11 @@ router.post('/dangNhap', async function (req, res,next) {
 
 // lay api thong tin ca nhan
 //bên react sẽ gửi về id của người dùng sau đó tìm kiếm nguòi dùng theo id và trả về thông tin cá nhân
-//link local: http://localhost:3002/api/getPersonalInfos/:id
-//vd: http://localhost:3002/api/getPersonalInfos/65138141d7cf634a93bb9ef3
-//linh glitch: https://gratis-dusty-cabinet.glitch.me/api/getPersonalInfos/:id
-//vd: https://gratis-dusty-cabinet.glitch.me/api/getPersonalInfos/65138141d7cf634a93bb9ef3
-router.get('/getPersonalInfos/:id', async function(req, res, next) {
+//link local: http://localhost:3002/api/getThongTinCaNhan/:id
+//vd: http://localhost:3002/api/getThongTinCaNhan/65138141d7cf634a93bb9ef3
+//linh glitch: https://gratis-dusty-cabinet.glitch.me/api/getThongTinCaNhan/:id
+//vd: https://gratis-dusty-cabinet.glitch.me/api/getThongTinCaNhan/65138141d7cf634a93bb9ef3
+router.get('/getThongTinCaNhan/:id', async function(req, res, next) {
     const id = req.params.id;
     const query = NguoiDung.where({_id:id})
     const item = await query.findOne();
@@ -104,5 +104,6 @@ router.get('/getPersonalInfos/:id', async function(req, res, next) {
             trangThai: item.trangThai},
         message: "lay thanh cong"}));
 });
+
 
 module.exports = router;
