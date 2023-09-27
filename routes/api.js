@@ -18,7 +18,7 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
         var objId ;
         var item = await NguoiDung.find({taiKhoan: taiKhoan})
 
-        if (item[0] == null){
+        if (item == null){
             await NguoiDung.create({
                 taiKhoan:taiKhoan,
                 matKhau:matKhau,
