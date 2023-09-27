@@ -34,14 +34,16 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
             const data = await query.findOne();
 
             res.end(JSON.stringify({
-                id:data._id,
-                hoTen:data.hoTen,
-                ngaySinh:data.ngaySinh,
-                gioiTinh:data.gioiTinh,
-                moTa:data.moTa,
-                hinhAnh:data.hinhAnh,
-                trangThai:data.trangThai,
-                message:'Dang ki thanh cong'}));
+                data:{
+                    id:data._id,
+                    hoTen:data.hoTen,
+                    ngaySinh:data.ngaySinh,
+                    gioiTinh:data.gioiTinh,
+                    moTa:data.moTa,
+                    hinhAnh:data.hinhAnh,
+                    trangThai:data.trangThai},
+                message:'Dang ki thanh cong'
+            }));
         }else{
             res.end(JSON.stringify({data: {}, message: "Tai khoan da ton tai"}));
         }
@@ -53,6 +55,8 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
 //Tìm kiếm trong database theo tài khoản mật khẩu
 //Nếu đúng tài khoản và mật khẩu thì cho phép đăng nhập và trả về thông tin cá nhân của tài khoản đăng nhập
 //Nếu sai thì sẽ hiện ra message sai thông tin đăng nhập
+//link local: http://localhost:3002/api/dangNhap
+//linh glitch: https://gratis-dusty-cabinet.glitch.me/api/dangNhap
 router.post('/dangNhap', async function (req, res,next) {
     const username = req.body.taiKhoan;
     const password = req.body.matKhau;
@@ -73,31 +77,32 @@ router.post('/dangNhap', async function (req, res,next) {
                 moTa: item.moTa,
                 hinhAnh: item.hinhAnh,
                 trangThai: item.trangThai},
-            message:"dang nhap thanh cong"}));
+            message:"dang nhap thanh cong"
+            }));
     }
 });
 
-//lay api thong tin ca nhan
-// router.get('/getPersonalInfos/:id', async function(req, res, next) {
-//     const id = req.params.id;
-//     const data = await NguoiDung.find({_id: id});
-//     console.log("day la data:" + data)
-//     // const mapping = await data.map((item) => {
-//     //     let urlImg;
-//     //     if (item.hinhAnh == null) {
-//     //         urlImg = ""
-//     //     } else {
-//     //         urlImg = item.hinhAnh;
-//     //     }
-//     //     return {
-//     //         id: item._id,
-//     //         hoTen: item.hoTen,
-//     //         gioiTinh: item.gioiTinh,
-//     //         ngaySinh: item.ngaySinh,
-//     //         hinhAnh: urlImg
-//     //     }
-//     // })
-//     res.end(JSON.stringify(data));
-// });
+// lay api thong tin ca nhan
+//bên react sẽ gửi về id của người dùng sau đó tìm kiếm nguòi dùng theo id và trả về thông tin cá nhân
+//link local: http://localhost:3002/api/getPersonalInfos/:id
+//vd: http://localhost:3002/api/getPersonalInfos/65138141d7cf634a93bb9ef3
+//linh glitch: https://gratis-dusty-cabinet.glitch.me/api/getPersonalInfos/:id
+//vd: https://gratis-dusty-cabinet.glitch.me/api/getPersonalInfos/65138141d7cf634a93bb9ef3
+router.get('/getPersonalInfos/:id', async function(req, res, next) {
+    const id = req.params.id;
+    const query = NguoiDung.where({_id:id})
+    const item = await query.findOne();
+
+    res.end(JSON.stringify({
+        data:{
+            id:item._id,
+            hoTen: item.hoTen,
+            ngaySinh: item.ngaySinh,
+            gioiTinh: item.gioiTinh,
+            moTa: item.moTa,
+            hinhAnh: item.hinhAnh,
+            trangThai: item.trangThai},
+        message: "lay thanh cong"}));
+});
 
 module.exports = router;
