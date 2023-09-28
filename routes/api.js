@@ -3,6 +3,7 @@ const router = express.Router();
 const mongo = require('mongoose');
 const NguoiDung = require('../database/NguoiDung')
 const MulterConfigs = require("../config/MulterConfigs");
+const {fileLoader} = require("ejs");
 
 //api đăng kí
 //vd: taiKhoan: admin, matKhau: a
@@ -14,10 +15,10 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
         const taiKhoan = req.body.taiKhoan
         const matKhau = req.body.matKhau
         const hoTen = req.body.hoTen
-        const hinhAnh = 'https://gratis-dusty-cabinet.glitch.me/public/images/logofpt.png';
+        const hinhAnh = 'logofpt.png';
         var objId ;
-        var item = await NguoiDung.find({taiKhoan: taiKhoan})
-
+        var item = await NguoiDung.findOne(NguoiDung.where({taiKhoan: taiKhoan}))
+        console.log("item day"+item)
         if (item == null){
             await NguoiDung.create({
                 taiKhoan:taiKhoan,
@@ -30,18 +31,15 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
                 trangThai:1
             }).then(result => {objId = result._id})
 
-            const query = NguoiDung.where({_id:objId})
-            const data = await query.findOne();
-
             res.end(JSON.stringify({
                 data:{
-                    id:data._id,
-                    hoTen:data.hoTen,
-                    ngaySinh:data.ngaySinh,
-                    gioiTinh:data.gioiTinh,
-                    moTa:data.moTa,
-                    hinhAnh:data.hinhAnh,
-                    trangThai:data.trangThai},
+                    id:objId,
+                    hoTen:hoTen,
+                    ngaySinh:"dd-mm-yyyy",
+                    gioiTinh:2,
+                    moTa:"gioi thieu",
+                    hinhAnh: hinhAnh,
+                    trangThai:1},
                 message:'Dang ki thanh cong'
             }));
         }else{
@@ -75,7 +73,7 @@ router.post('/dangNhap', async function (req, res,next) {
                 ngaySinh:item.ngaySinh,
                 gioiTinh:item.gioiTinh,
                 moTa: item.moTa,
-                hinhAnh: item.hinhAnh,
+                hinhAnh:"https://localhost:3002/public/images/" + item.hinhAnh,
                 trangThai: item.trangThai},
             message:"dang nhap thanh cong"
             }));
@@ -100,10 +98,39 @@ router.get('/getThongTinCaNhan/:id', async function(req, res, next) {
             ngaySinh: item.ngaySinh,
             gioiTinh: item.gioiTinh,
             moTa: item.moTa,
-            hinhAnh: item.hinhAnh,
+            hinhAnh:"https://localhost:3002/public/images/" + item.hinhAnh,
             trangThai: item.trangThai},
         message: "lay thanh cong"}));
 });
 
+router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async function (req, res, next) {
+    const id = req.params.id;
+    const hoTen = req.body.hoTen;
+    const ngaySinh = req.body.ngaySinh;
+    const gioiTinh = req.body.gioiTinh;
+    const moTa = req.body.moTa;
+    const hinhAnh = req.files.map(file => file.filename);
+    let img = "";
+    if (hinhAnh.length > 0){
+        img = hinhAnh[0];
+    }
+    const filter = {_id: id};
+    let update = {
+        hoTen: hoTen,
+        ngaySinh: ngaySinh,
+        gioiTinh: gioiTinh,
+        moTa: moTa,
+        hinhAnh: img}
+    var item = await NguoiDung.findOneAndUpdate(filter, update, {new : true})
 
+    res.end(JSON.stringify({
+        data:{
+            id:item._id,
+        },
+        message: "Sua thanh cong"}));
+},
+    async function (err, req, res, next) {
+        res.send(err);
+    }
+);
 module.exports = router;
