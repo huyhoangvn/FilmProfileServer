@@ -73,7 +73,7 @@ router.post('/dangNhap', async function (req, res,next) {
                 ngaySinh:item.ngaySinh,
                 gioiTinh:item.gioiTinh,
                 moTa: item.moTa,
-                hinhAnh:"https://localhost:3002/public/images/" + item.hinhAnh,
+                hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/" + item.hinhAnh,
                 trangThai: item.trangThai},
             message:"dang nhap thanh cong"
             }));
@@ -98,7 +98,7 @@ router.get('/getThongTinCaNhan/:id', async function(req, res, next) {
             ngaySinh: item.ngaySinh,
             gioiTinh: item.gioiTinh,
             moTa: item.moTa,
-            hinhAnh:"https://localhost:3002/public/images/" + item.hinhAnh,
+            hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/"  + item.hinhAnh,
             trangThai: item.trangThai},
         message: "lay thanh cong"}));
 });
