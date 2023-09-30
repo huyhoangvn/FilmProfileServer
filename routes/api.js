@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongo = require('mongoose');
 const NguoiDung = require('../database/NguoiDung')
+const danhGiaPhim = require('../database/danhGiaPhim');
 const MulterConfigs = require("../config/MulterConfigs");
 const {fileLoader} = require("ejs");
 
@@ -102,7 +103,12 @@ router.get('/getThongTinCaNhan/:id', async function(req, res, next) {
             trangThai: item.trangThai},
         message: "lay thanh cong"}));
 });
-
+//api sua thong tin ca nhan
+//ben react sẽ trả về id sau đó  từ id sẽ cập nhật thông tin của người dùng theo id được trả về
+//link local: http://localhost:3002/api/suaThongTin/:id
+//vd: http://localhost:3002/api/suaThongTin/65138141d7cf634a93bb9ef3
+//linh glitch: https://gratis-dusty-cabinet.glitch.me/api/suaThongTin/:id
+//vd: https://gratis-dusty-cabinet.glitch.me/api/suaThongTin/65138141d7cf634a93bb9ef3
 router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async function (req, res, next) {
     const id = req.params.id;
     const hoTen = req.body.hoTen;
@@ -130,7 +136,15 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
         message: "Sua thanh cong"}));
 },
     async function (err, req, res, next) {
-        res.send(err);
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            res.end(JSON.stringify({data:{}, message:"Vượt quá dung lượng file cho phép (100MB)"}))
+        } else if (err.code === 'LIMIT_FILE_COUNT') {
+            res.end(JSON.stringify({data:{}, message:"Vượt quá số lượng file tải lên đồng thời (1 File)"}))
+        }
+        else {
+            res.end(JSON.stringify({data:{}, message:"" + err.message}))
+        }
+
     }
 );
 module.exports = router;
