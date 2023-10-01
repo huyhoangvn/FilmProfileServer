@@ -5,6 +5,7 @@ const NguoiDung = require('../database/NguoiDung')
 const danhGiaPhim = require('../database/danhGiaPhim');
 const MulterConfigs = require("../config/MulterConfigs");
 const {fileLoader} = require("ejs");
+const {lazyrouter} = require("express/lib/application");
 
 //api đăng kí
 //vd: taiKhoan: admin, matKhau: a
@@ -147,4 +148,44 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
 
     }
 );
+
+router.post('/themPhim/:id', MulterConfigs.upload.array('hinhAnh',1), async function (req, res) {
+    const idND = req.params.id
+    const tenPhim = req.body.tenPhim
+    const yeuThich = req.body.yeuThich
+    const danhGia = req.body.danhGia
+    const trangThaiXem = req.body.trangThaiXem
+    const trangThai = req.body.trangThai
+    const hinhAnh = 'logofpt.png';
+    var objId ;
+    var item = await danhGiaPhim.findOne(danhGiaPhim.where({taiKhoan: taiKhoan}))
+    console.log("item day"+item)
+    if (item == null){
+        await danhGiaPhim.create({
+            idND:idND,
+            tenPhim:tenPhim,
+            yeuThich:yeuThich,
+            danhGia:danhGia,
+            trangThaiXem:trangThaiXem,
+            trangThai:trangThai,
+            hinhAnh: hinhAnh
+        }).then(result => {objId = result._id})
+
+        res.end(JSON.stringify({
+            data:{
+                id:_id,
+                idND:idND,
+                tenPhim:tenPhim,
+                yeuThich:yeuThich,
+                danhGia:danhGia,
+                trangThaiXem:trangThaiXem,
+                trangThai:trangThai,
+                hinhAnh: hinhAnh
+            },
+            message:'Them thanh cong'
+        }));
+    }else{
+        res.end(JSON.stringify({data: {}, message: "Them that bai"}));
+    }
+});
 module.exports = router;

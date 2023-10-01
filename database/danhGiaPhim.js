@@ -10,4 +10,4 @@ var danhGiaPhim = new Schema({
     hinhAnh: [{type:String}]
 });
 
-module.exports = mongoose.model('NguoiDung', danhGiaPhim , 'profile');
+module.exports = mongoose.model('danhGiaPhim', danhGiaPhim , 'film');
