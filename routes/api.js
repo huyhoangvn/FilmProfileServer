@@ -39,8 +39,9 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
                     ngaySinh:"dd-mm-yyyy",
                     gioiTinh:2,
                     moTa:"gioi thieu",
-                    hinhAnh: hinhAnh,
-                    trangThai:1},
+                    hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/" + hinhAnh,
+                    trangThai:1
+                },
                 message:'Dang ki thanh cong'
             }));
         }else{
