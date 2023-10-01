@@ -8,24 +8,34 @@
   <body >
   <!--form dang ki-->
   <div class="row justify-content-center align-content-center">
-    <form class="col-6 text-center" method="post" action="themTaiKhoan" enctype="multipart/form-data" >
+    <form class="col-6 text-center" id="register" method="post" action="themTaiKhoan" enctype="multipart/form-data" >
       <h1>Register</h1>
       <br>
-      <input name="ten" placeholder="Enter your username">
+      <input id="taiKhoan" name="taiKhoan" placeholder="nhap tai khoan">
       <br>
       <br>
-      <input name="gmail" placeholder="Enter your email">
+      <input id="matKhau" type="password" name="matKhau" placeholder="nhap mat khau">
       <br>
       <br>
-      <input type="password" name="matKhau" placeholder="Enter your password">
+      <input id="hoTen" name="hoTen" placeholder="nhap ten">
       <br>
       <br>
-      <input type="password" name="nhapLai" placeholder="Enter your re-password">
+      <input id="ngaySinh" name="ngaySinh" placeholder="nhap ngay sinh">
+      <br>
+      <br>
+      <input id="gioiTinh" name="gioiTinh" placeholder="nhap gioi tinh">
+      <br>
+      <br>
+      <input id="moTa" name="moTa" placeholder="nhap mo ta">
+      <br>
+      <br>
+      <input name="hinhAnh" type="file" multiple="multiple">
       <br>
       <br>
       <div class="row">
-        <button type="submit">CREATE</button>
+        <input type="submit" form="register" value="Create">
       </div>
+      <label>Đã có tài khoản? <a href="/login" >Login </a></label>
     </form>
   </div>
 <!--  thong bao loi-->
@@ -34,12 +44,5 @@
     <h3><%=message%></h3>
     <%}catch(Ex){}%>
   </div>
-  <!--hien thi-->
-  <%for(var i = 0; i < data.length; i++){%>
-  <h4>Ten: <%=data[i].ten%></h4>
-  <h4>Email: <%=data[i].gmail%></h4>
-  <h4>Mat khau: <%=data[i].matKhau%></h4>
-  <h4>Nhap lai mat khau: <%=data[i].nhapLai%></h4>
-  <%}%>
   </body>
 </html>
