@@ -2,8 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var danhGiaPhim = new Schema({
+    idNguoiDung: String,
+    idPhim: String,
     tenPhim: String,
-    yeuThich: String,
+    yeuThich: Number,
     danhGia: String,
     trangThaiXem: Number,
     trangThai: Number,
