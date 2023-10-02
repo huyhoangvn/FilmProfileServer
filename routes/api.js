@@ -150,43 +150,43 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
     }
 );
 
-router.post('/themPhim/:id', MulterConfigs.upload.array('hinhAnh',1), async function (req, res) {
-    const idND = req.params.id
-    const tenPhim = req.body.tenPhim
-    const yeuThich = req.body.yeuThich
-    const danhGia = req.body.danhGia
-    const trangThaiXem = req.body.trangThaiXem
-    const trangThai = req.body.trangThai
-    const hinhAnh = 'logofpt.png';
-    var objId ;
-    var item = await danhGiaPhim.findOne(danhGiaPhim.where({taiKhoan: taiKhoan}))
-    console.log("item day"+item)
-    if (item == null){
-        await danhGiaPhim.create({
-            idND:idND,
-            tenPhim:tenPhim,
-            yeuThich:yeuThich,
-            danhGia:danhGia,
-            trangThaiXem:trangThaiXem,
-            trangThai:trangThai,
-            hinhAnh: hinhAnh
-        }).then(result => {objId = result._id})
-
-        res.end(JSON.stringify({
-            data:{
-                id:_id,
-                idND:idND,
-                tenPhim:tenPhim,
-                yeuThich:yeuThich,
-                danhGia:danhGia,
-                trangThaiXem:trangThaiXem,
-                trangThai:trangThai,
-                hinhAnh: hinhAnh
-            },
-            message:'Them thanh cong'
-        }));
-    }else{
-        res.end(JSON.stringify({data: {}, message: "Them that bai"}));
-    }
-});
+// router.post('/themPhim/:id', MulterConfigs.upload.array('hinhAnh',1), async function (req, res) {
+//     const idNguoiDung = req.params.id
+//     const idPhim = req.body.idPhim
+//     const tenPhim = req.body.tenPhim
+//     const hinhAnh = req.files.map(file => file.filename);
+//     let img = "";
+//     if (hinhAnh.length > 0){
+//         img = hinhAnh[0];
+//     }
+//     var item = await danhGiaPhim.find({})
+//     if (item == null){
+//         await danhGiaPhim.create({
+//             idNguoiDung:idNguoiDung,
+//             idPhim: idPhim,
+//             tenPhim:tenPhim,
+//             yeuThich:1,
+//             danhGia:"N/A",
+//             trangThaiXem:0,
+//             trangThai:1,
+//             hinhAnh: hinhAnh
+//         });
+//
+//         res.end(JSON.stringify({
+//             data:{
+//                 idNguoiDung:idNguoiDung,
+//                 idPhim: idPhim,
+//                 tenPhim:tenPhim,
+//                 yeuThich:1,
+//                 danhGia:"N/A",
+//                 trangThaiXem:0,
+//                 trangThai:1,
+//                 hinhAnh: hinhAnh
+//             },
+//             message:'Them thanh cong'
+//         }));
+//     }else{
+//         res.end(JSON.stringify({data: {}, message: "Them that bai"}));
+//     }
+// });
 module.exports = router;
