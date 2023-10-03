@@ -6,7 +6,7 @@ var danhGiaPhim = new Schema({
     idPhim: String,
     tenPhim: String,
     yeuThich: Number,
-    danhGia: String,
+    danhGia: Number,
     trangThaiXem: Number,
     trangThai: Number,
     hinhAnh: [{type:String}]

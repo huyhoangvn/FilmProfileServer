@@ -20,7 +20,6 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
         const hinhAnh = 'logofpt.png';
         var objId ;
         var item = await NguoiDung.findOne(NguoiDung.where({taiKhoan: taiKhoan}))
-        console.log("item day"+item)
         if (item == null){
             await NguoiDung.create({
                 taiKhoan:taiKhoan,
@@ -45,7 +44,7 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
                 message:'Dang ki thanh cong'
             }));
         }else{
-            res.end(JSON.stringify({data: {}, message: "Tai khoan da ton tai"}));
+            res.end(JSON.stringify({data: {}, message: "Tài khỏan đã tồn tại"}));
         }
     });
 
@@ -60,11 +59,11 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
 router.post('/dangNhap', async function (req, res,next) {
     const username = req.body.taiKhoan;
     const password = req.body.matKhau;
-    const query = NguoiDung.where({taiKhoan: username, matKhau: password})
+    const query = NguoiDung.where({taiKhoan: username, matKhau: password, trangThai: 1})
     var item = await query.findOne();
 
     if (item == null){
-        res.end(JSON.stringify({data: {}, message: "dang nhap that bai"}));
+        res.end(JSON.stringify({data: {}, message: "Đăng nhập thất bại"}));
     }else{
         res.end(JSON.stringify({
             data:{
@@ -77,12 +76,12 @@ router.post('/dangNhap', async function (req, res,next) {
                 moTa: item.moTa,
                 hinhAnh:"https://localhost:3002/public/images/" + item.hinhAnh,
                 trangThai: item.trangThai},
-            message:"dang nhap thanh cong"
+            message:"Đăng nhập thành công"
             }));
     }
 });
 
-// lay api thong tin ca nhan
+//apiGetThongTinCaNhan
 //bên react sẽ gửi về id của người dùng sau đó tìm kiếm nguòi dùng theo id và trả về thông tin cá nhân
 //link local: http://localhost:3002/api/getThongTinCaNhan/:id
 //vd: http://localhost:3002/api/getThongTinCaNhan/65138141d7cf634a93bb9ef3
@@ -102,10 +101,10 @@ router.get('/getThongTinCaNhan/:id', async function(req, res, next) {
             moTa: item.moTa,
             hinhAnh:"https://localhost:3002/public/images/" + item.hinhAnh,
             trangThai: item.trangThai},
-        message: "lay thanh cong"}));
+        message: "Lấy thông tin thành công"}));
 });
-//api sua thong tin ca nhan
-//ben react sẽ trả về id sau đó  từ id sẽ cập nhật thông tin của người dùng theo id được trả về
+//apiSuaThongTin
+//bên react sẽ trả về id sau đó  từ id sẽ cập nhật thông tin của người dùng theo id được trả về
 //link local: http://localhost:3002/api/suaThongTin/:id
 //vd: http://localhost:3002/api/suaThongTin/65138141d7cf634a93bb9ef3
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/suaThongTin/:id
@@ -134,7 +133,7 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
         data:{
             id:item._id,
         },
-        message: "Sua thanh cong"}));
+        message: "Sửa thành công"}));
 },
     async function (err, req, res, next) {
         if (err.code === 'LIMIT_FILE_SIZE') {
@@ -149,43 +148,113 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
     }
 );
 
-// router.post('/themPhim/:id', MulterConfigs.upload.array('hinhAnh',1), async function (req, res) {
-//     const idNguoiDung = req.params.id
-//     const idPhim = req.body.idPhim
-//     const tenPhim = req.body.tenPhim
-//     const hinhAnh = req.files.map(file => file.filename);
-//     let img = "";
-//     if (hinhAnh.length > 0){
-//         img = hinhAnh[0];
-//     }
-//     var item = await danhGiaPhim.find({})
-//     if (item == null){
-//         await danhGiaPhim.create({
-//             idNguoiDung:idNguoiDung,
-//             idPhim: idPhim,
-//             tenPhim:tenPhim,
-//             yeuThich:1,
-//             danhGia:"N/A",
-//             trangThaiXem:0,
-//             trangThai:1,
-//             hinhAnh: hinhAnh
-//         });
-//
-//         res.end(JSON.stringify({
-//             data:{
-//                 idNguoiDung:idNguoiDung,
-//                 idPhim: idPhim,
-//                 tenPhim:tenPhim,
-//                 yeuThich:1,
-//                 danhGia:"N/A",
-//                 trangThaiXem:0,
-//                 trangThai:1,
-//                 hinhAnh: hinhAnh
-//             },
-//             message:'Them thanh cong'
-//         }));
-//     }else{
-//         res.end(JSON.stringify({data: {}, message: "Them that bai"}));
-//     }
-// });
+//apiThemPhim
+//Bên react gửi về id rồi thêm phim vào danh sách
+//link local: http://localhost:3002/api/themPhim/:id
+//vd: http://localhost:3002/api/themPhim/65138141d7cf634a93bb9ef3
+//linh glitch: https://gratis-dusty-cabinet.glitch.me/api/themPhim/:id
+//vd: https://gratis-dusty-cabinet.glitch.me/api/themPhim/65138141d7cf634a93bb9ef3
+router.post('/themPhim/:id', MulterConfigs.upload.array('hinhAnh',1), async function (req, res) {
+    const idNguoiDung = req.params.id
+    const idPhim = req.body.idPhim
+    const tenPhim = req.body.tenPhim
+    const hinhAnh = req.files.map(file => file.filename);
+    let img = "";
+    if (hinhAnh.length > 0){
+        img = hinhAnh[0];
+    }
+    var objId ;
+    var phimDaThem = await danhGiaPhim.findOne(danhGiaPhim.where({idNguoiDung: idNguoiDung, idPhim: idPhim}));
+    if (phimDaThem == null ){
+        await danhGiaPhim.create({
+            idNguoiDung:idNguoiDung,
+            idPhim: idPhim,
+            tenPhim:tenPhim,
+            yeuThich:1,
+            danhGia:-1,
+            trangThaiXem:0,
+            trangThai:1,
+            hinhAnh:req.protocol + '://' + req.get('host') +"/public/images/"+hinhAnh
+        }).then(result => {objId = result._id});
+
+        res.end(JSON.stringify({
+            data:{
+                idNguoiDung:idNguoiDung,
+                idPhim: idPhim,
+                tenPhim:tenPhim,
+                yeuThich:1,
+                danhGia:-1,
+                trangThaiXem:0,
+                trangThai:1,
+                hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/"+hinhAnh
+            },
+            message:'Thêm phim thành công'
+        }));
+    }else{
+        if (phimDaThem.trangThai == 1){
+            res.end(JSON.stringify({
+                data:{},
+                message:'Đã tồn tại trong danh sách'
+            }));
+        }else if (phimDaThem.trangThai == 0){
+            const filter = {idNguoiDung: idNguoiDung, idPhim: idPhim};
+            let update = {trangThai: 1}
+            await danhGiaPhim.findOneAndUpdate(filter, update, {new: true})
+            res.end(JSON.stringify({
+                data:{},
+                message:'Thêm thành công'
+            }));
+        }
+    }
+});
+
+//apiPhimTrongDanhSach
+//Hàm này để xác định xem phim đã tồn tại trong danh sách hay chưa
+//link local: http://localhost:3002/api/isPhimTrongDanhSach/:idPhim/:idNguoiDung
+//vd: http://localhost:3002/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
+//linh glitch: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/:idPhim/:idNguoiDung
+//vd: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
+router.get('/isPhimTrongDanhSach/:idPhim/:idNguoiDung', async function (req, res) {
+    const idPhim = req.params.idPhim;
+    const idNguoiDung = req.params.idNguoiDung;
+    var phimDaThem = await danhGiaPhim.findOne(danhGiaPhim.where({idNguoiDung: idNguoiDung, idPhim: idPhim, trangThai: 1}));
+    if (phimDaThem == null){
+        res.end(JSON.stringify({
+            data: false,
+            message:'Chưa tồn tại trong danh sách'
+        }));
+    }else{
+        res.end(JSON.stringify({
+            data: true,
+            message:'Đã tồn tại trong danh sách'
+        }));
+    }
+});
+
+//apiXoaKhoiDanhSach
+//Hàm này dùng để thay đổi trạng thái rồi xóa khỏi giao diện
+//link local: http://localhost:3002/api/isPhimTrongDanhSach/:idPhim/:idNguoiDung
+//vd: http://localhost:3002/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
+//linh glitch: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/:idPhim/:idNguoiDung
+//vd: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
+router.get('/xoaKhoiDanhSach/:idPhim/:idNguoiDung', async function (req, res) {
+    const idPhim = req.params.idPhim;
+    const idNguoiDung = req.params.idNguoiDung;
+    var phimDaThem = await danhGiaPhim.findOne(danhGiaPhim.where({idPhim: idPhim, idNguoiDung: idNguoiDung, trangThai: 1}));
+    console.log("phim day" + phimDaThem)
+    if (phimDaThem == null){
+        res.end(JSON.stringify({
+            data: {},
+            message:'Chưa tồn tại trong danh sách'
+        }));
+    }else{
+        const filter = {idPhim: idPhim, idNguoiDung: idNguoiDung};
+        let update = {trangThai: 0}
+        await danhGiaPhim.findOneAndUpdate(filter, update, {new: true})
+        res.end(JSON.stringify({
+            data:{},
+            message:'Xóa thành công'
+        }));
+    }
+});
 module.exports = router;
