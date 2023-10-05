@@ -39,8 +39,9 @@ router.post('/themTaiKhoan', MulterConfigs.upload.array('hinhAnh',1), async func
                     ngaySinh:"dd-mm-yyyy",
                     gioiTinh:2,
                     moTa:"gioi thieu",
-                    hinhAnh: hinhAnh,
-                    trangThai:1},
+                    hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/" + hinhAnh,
+                    trangThai:1
+                },
                 message:'Dang ki thanh cong'
             }));
         }else{
@@ -74,7 +75,7 @@ router.post('/dangNhap', async function (req, res,next) {
                 ngaySinh:item.ngaySinh,
                 gioiTinh:item.gioiTinh,
                 moTa: item.moTa,
-                hinhAnh:"https://localhost:3002/public/images/" + item.hinhAnh,
+                hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/" + item.hinhAnh,
                 trangThai: item.trangThai},
             message:"Đăng nhập thành công"
             }));
@@ -99,10 +100,11 @@ router.get('/getThongTinCaNhan/:id', async function(req, res, next) {
             ngaySinh: item.ngaySinh,
             gioiTinh: item.gioiTinh,
             moTa: item.moTa,
-            hinhAnh:"https://localhost:3002/public/images/" + item.hinhAnh,
+            hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/"  + item.hinhAnh,
             trangThai: item.trangThai},
         message: "Lấy thông tin thành công"}));
 });
+
 //apiSuaThongTin
 //bên react sẽ trả về id sau đó  từ id sẽ cập nhật thông tin của người dùng theo id được trả về
 //link local: http://localhost:3002/api/suaThongTin/:id
@@ -119,6 +121,14 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
     let img = "";
     if (hinhAnh.length > 0){
         img = hinhAnh[0];
+    } else {
+        //Nếu ảnh tải lên rỗng thì mình lấy cái ảnh cũ của người dùng thôi
+        // await query.findOne({idNguoiDung: id}).then(result => {
+        //     img = result.hinhAnh[0]
+        // })
+        //Chắc vậy
+        //Có thể lấy luôn hoTen, NgaySinh, GioiTinh cũ nếu truyền vào rỗng luôn
+        //VD: hoTen = result.hoTen,...
     }
     const filter = {_id: id};
     let update = {
@@ -149,17 +159,19 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
 );
 
 //apiThemPhim
-//Bên react gửi về id rồi thêm phim vào danh sách
+//Bên react gửi về idNguoiDung rồi thêm phim vào danh sách
 //link local: http://localhost:3002/api/themPhim/:id
 //vd: http://localhost:3002/api/themPhim/65138141d7cf634a93bb9ef3
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/themPhim/:id
 //vd: https://gratis-dusty-cabinet.glitch.me/api/themPhim/65138141d7cf634a93bb9ef3
-router.post('/themPhim/:id', MulterConfigs.upload.array('hinhAnh',1), async function (req, res) {
-    const idNguoiDung = req.params.id
+router.post('/themPhim/:idNguoiDung', MulterConfigs.upload.array('hinhAnh',1), async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung
     const idPhim = req.body.idPhim
     const tenPhim = req.body.tenPhim
     const hinhAnh = req.protocol + '://' + req.get('host') +"/public/images/"+req.files.map(file => file.filename);
     let img = "";
+    //Không nên tải ảnh lên bằng mutter mà chỉ lưu link thôi là được vì mình lấy link từ api khác mà, giống như là lưu tên thôi
+    //VD: https://upload.wikimedia.org/wikipedia/commons/9/92/The_death.png <= có đuôi rồi cứ lưu như string thôi
     if (hinhAnh.length > 0){
         img = hinhAnh[0];
     }
@@ -257,6 +269,7 @@ router.get('/xoaKhoiDanhSach/:idPhim/:idNguoiDung', async function (req, res) {
         }));
     }
 });
+
 router.get('/timTheoTen/:idNguoiDung/:tenPhim', async function (req, res) {
     const tenPhim = req.params.tenPhim;
     const idNguoiDung = req.params.idNguoiDung;
@@ -290,6 +303,45 @@ router.get('/timTheoTrangThaiXem/:idNguoiDung/:trangThaiXem', async function (re
             message:'Tìm đã xem thành công'
         }));
     }
+});
+
+
+
+// Lấy api lấy trung bình điểm đánh giá phim của người dùng ứng dụng theo id phim
+//link local: http://localhost:3002/api/getDiemDanhGia/:idPhim
+//vd: http://localhost:3002/api/getDiemDanhGia/512218 (Id phim Transformer)
+//Trả về N/A nếu phim không có đánh giá và điểm trung bình nếu có
+router.get('/getDiemDanhGia/:idPhim', async function(req, res, next) {
+    const id = req.params.idPhim;
+    let ketQuaDanhGia = -1;
+    const query  = await danhGiaPhim.aggregate(
+        [
+            { 
+                $match: {
+                idPhim : id,
+                trangThai : 1,
+                danhGia: { $not: { $eq: -1 } 
+            }}},
+            {
+                $group: {
+                    _id: null,
+                    rating: {
+                      $avg: {$sum: "$danhGia"}
+            }}}
+        ]
+    )
+    .then(result => {
+        if(result.length > 0){
+            ketQuaDanhGia = result[0].rating
+        }
+    })
+
+    res.end(JSON.stringify({
+        data:{
+            ketQuaDanhGia
+        },
+        message: "Thành công"
+    }));
 });
 
 
