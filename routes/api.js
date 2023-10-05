@@ -117,7 +117,7 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
     const ngaySinh = req.body.ngaySinh;
     const gioiTinh = req.body.gioiTinh;
     const moTa = req.body.moTa;
-    const hinhAnh = req.files.map(file => file.filename);
+    const hinhAnh = req.protocol + '://' + req.get('host') +"/public/images/"+req.files.map(file => file.filename);
     let img = "";
     if (hinhAnh.length > 0){
         img = hinhAnh[0];
@@ -168,7 +168,7 @@ router.post('/themPhim/:idNguoiDung', MulterConfigs.upload.array('hinhAnh',1), a
     const idNguoiDung = req.params.idNguoiDung
     const idPhim = req.body.idPhim
     const tenPhim = req.body.tenPhim
-    const hinhAnh = req.files.map(file => file.filename);
+    const hinhAnh = req.protocol + '://' + req.get('host') +"/public/images/"+req.files.map(file => file.filename);
     let img = "";
     //Không nên tải ảnh lên bằng mutter mà chỉ lưu link thôi là được vì mình lấy link từ api khác mà, giống như là lưu tên thôi
     //VD: https://upload.wikimedia.org/wikipedia/commons/9/92/The_death.png <= có đuôi rồi cứ lưu như string thôi
@@ -186,7 +186,7 @@ router.post('/themPhim/:idNguoiDung', MulterConfigs.upload.array('hinhAnh',1), a
             danhGia:-1,
             trangThaiXem:0,
             trangThai:1,
-            hinhAnh:req.protocol + '://' + req.get('host') +"/public/images/"+hinhAnh
+            hinhAnh:hinhAnh
         }).then(result => {objId = result._id});
 
         res.end(JSON.stringify({
@@ -198,7 +198,7 @@ router.post('/themPhim/:idNguoiDung', MulterConfigs.upload.array('hinhAnh',1), a
                 danhGia:-1,
                 trangThaiXem:0,
                 trangThai:1,
-                hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/"+hinhAnh
+                hinhAnh:hinhAnh
             },
             message:'Thêm phim thành công'
         }));
@@ -270,6 +270,43 @@ router.get('/xoaKhoiDanhSach/:idPhim/:idNguoiDung', async function (req, res) {
     }
 });
 
+router.get('/timTheoTen/:idNguoiDung/:tenPhim', async function (req, res) {
+    const tenPhim = req.params.tenPhim;
+    const idNguoiDung = req.params.idNguoiDung;
+    var data = await danhGiaPhim.find({tenPhim: {$regex: tenPhim}, idNguoiDung: idNguoiDung});
+    res.end(JSON.stringify({
+        data:data,
+        message:'Tìm thành công'
+    }));
+});
+router.get('/timTheoYeuThich/:idNguoiDung', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung;
+    var data = await danhGiaPhim.find({yeuThich: 1, idNguoiDung: idNguoiDung});
+    res.end(JSON.stringify({
+        data:data,
+        message:'Tìm thành công'
+    }));
+});
+router.get('/timTheoTrangThaiXem/:idNguoiDung/:trangThaiXem', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung;
+    const trangThaiXem = req.params.trangThaiXem;
+    if (trangThaiXem == 2){
+        var data = await danhGiaPhim.find({trangThaiXem: 1, idNguoiDung: idNguoiDung});
+        res.end(JSON.stringify({
+            data:data,
+            message:'Tìm xem sau thành công'
+        }));
+    }else if(trangThaiXem == 1){
+        var data = await danhGiaPhim.find({trangThaiXem: 0, idNguoiDung: idNguoiDung});
+        res.end(JSON.stringify({
+            data:data,
+            message:'Tìm đã xem thành công'
+        }));
+    }
+});
+
+
+
 // Lấy api lấy trung bình điểm đánh giá phim của người dùng ứng dụng theo id phim
 //link local: http://localhost:3002/api/getDiemDanhGia/:idPhim
 //vd: http://localhost:3002/api/getDiemDanhGia/512218 (Id phim Transformer)
@@ -306,5 +343,6 @@ router.get('/getDiemDanhGia/:idPhim', async function(req, res, next) {
         message: "Thành công"
     }));
 });
+
 
 module.exports = router;
