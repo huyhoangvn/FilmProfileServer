@@ -115,7 +115,7 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
     const ngaySinh = req.body.ngaySinh;
     const gioiTinh = req.body.gioiTinh;
     const moTa = req.body.moTa;
-    const hinhAnh = req.files.map(file => file.filename);
+    const hinhAnh = req.protocol + '://' + req.get('host') +"/public/images/"+req.files.map(file => file.filename);
     let img = "";
     if (hinhAnh.length > 0){
         img = hinhAnh[0];
@@ -158,7 +158,7 @@ router.post('/themPhim/:id', MulterConfigs.upload.array('hinhAnh',1), async func
     const idNguoiDung = req.params.id
     const idPhim = req.body.idPhim
     const tenPhim = req.body.tenPhim
-    const hinhAnh = req.files.map(file => file.filename);
+    const hinhAnh = req.protocol + '://' + req.get('host') +"/public/images/"+req.files.map(file => file.filename);
     let img = "";
     if (hinhAnh.length > 0){
         img = hinhAnh[0];
@@ -174,7 +174,7 @@ router.post('/themPhim/:id', MulterConfigs.upload.array('hinhAnh',1), async func
             danhGia:-1,
             trangThaiXem:0,
             trangThai:1,
-            hinhAnh:req.protocol + '://' + req.get('host') +"/public/images/"+hinhAnh
+            hinhAnh:hinhAnh
         }).then(result => {objId = result._id});
 
         res.end(JSON.stringify({
@@ -186,7 +186,7 @@ router.post('/themPhim/:id', MulterConfigs.upload.array('hinhAnh',1), async func
                 danhGia:-1,
                 trangThaiXem:0,
                 trangThai:1,
-                hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/"+hinhAnh
+                hinhAnh:hinhAnh
             },
             message:'Thêm phim thành công'
         }));
@@ -257,4 +257,40 @@ router.get('/xoaKhoiDanhSach/:idPhim/:idNguoiDung', async function (req, res) {
         }));
     }
 });
+router.get('/timTheoTen/:idNguoiDung/:tenPhim', async function (req, res) {
+    const tenPhim = req.params.tenPhim;
+    const idNguoiDung = req.params.idNguoiDung;
+    var data = await danhGiaPhim.find({tenPhim: {$regex: tenPhim}, idNguoiDung: idNguoiDung});
+    res.end(JSON.stringify({
+        data:data,
+        message:'Tìm thành công'
+    }));
+});
+router.get('/timTheoYeuThich/:idNguoiDung', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung;
+    var data = await danhGiaPhim.find({yeuThich: 1, idNguoiDung: idNguoiDung});
+    res.end(JSON.stringify({
+        data:data,
+        message:'Tìm thành công'
+    }));
+});
+router.get('/timTheoTrangThaiXem/:idNguoiDung/:trangThaiXem', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung;
+    const trangThaiXem = req.params.trangThaiXem;
+    if (trangThaiXem == 2){
+        var data = await danhGiaPhim.find({trangThaiXem: 1, idNguoiDung: idNguoiDung});
+        res.end(JSON.stringify({
+            data:data,
+            message:'Tìm xem sau thành công'
+        }));
+    }else if(trangThaiXem == 1){
+        var data = await danhGiaPhim.find({trangThaiXem: 0, idNguoiDung: idNguoiDung});
+        res.end(JSON.stringify({
+            data:data,
+            message:'Tìm đã xem thành công'
+        }));
+    }
+});
+
+
 module.exports = router;
