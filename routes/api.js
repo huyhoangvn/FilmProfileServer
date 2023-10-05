@@ -168,13 +168,9 @@ router.post('/themPhim/:idNguoiDung', MulterConfigs.upload.array('hinhAnh',1), a
     const idNguoiDung = req.params.idNguoiDung
     const idPhim = req.body.idPhim
     const tenPhim = req.body.tenPhim
-    const hinhAnh = req.protocol + '://' + req.get('host') +"/public/images/"+req.files.map(file => file.filename);
-    let img = "";
+    const hinhAnh = req.body.hinhAnh;
     //Không nên tải ảnh lên bằng mutter mà chỉ lưu link thôi là được vì mình lấy link từ api khác mà, giống như là lưu tên thôi
     //VD: https://upload.wikimedia.org/wikipedia/commons/9/92/The_death.png <= có đuôi rồi cứ lưu như string thôi
-    if (hinhAnh.length > 0){
-        img = hinhAnh[0];
-    }
     var objId ;
     var phimDaThem = await danhGiaPhim.findOne(danhGiaPhim.where({idNguoiDung: idNguoiDung, idPhim: idPhim}));
     if (phimDaThem == null ){
@@ -304,6 +300,14 @@ router.get('/timTheoTrangThaiXem/:idNguoiDung/:trangThaiXem', async function (re
         }));
     }
 });
+router.get('/getAll/:idNguoiDung', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung;
+    var data = await danhGiaPhim.find({});
+    res.end(JSON.stringify({
+        data:data,
+        message:'Lấy tất cả thành công'
+    }));
+});
 
 
 
@@ -316,11 +320,11 @@ router.get('/getDiemDanhGia/:idPhim', async function(req, res, next) {
     let ketQuaDanhGia = -1;
     const query  = await danhGiaPhim.aggregate(
         [
-            { 
+            {
                 $match: {
                 idPhim : id,
                 trangThai : 1,
-                danhGia: { $not: { $eq: -1 } 
+                danhGia: { $not: { $eq: -1 }
             }}},
             {
                 $group: {
