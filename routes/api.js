@@ -266,48 +266,14 @@ router.get('/xoaKhoiDanhSach/:idPhim/:idNguoiDung', async function (req, res) {
     }
 });
 
-router.get('/timTheoTen/:idNguoiDung/:tenPhim', async function (req, res) {
-    const tenPhim = req.params.tenPhim;
-    const idNguoiDung = req.params.idNguoiDung;
-    var data = await danhGiaPhim.find({tenPhim: {$regex: tenPhim}, idNguoiDung: idNguoiDung});
-    res.end(JSON.stringify({
-        data:data,
-        message:'Tìm thành công'
-    }));
-});
-router.get('/timTheoYeuThich/:idNguoiDung', async function (req, res) {
-    const idNguoiDung = req.params.idNguoiDung;
-    var data = await danhGiaPhim.find({yeuThich: 1, idNguoiDung: idNguoiDung});
-    res.end(JSON.stringify({
-        data:data,
-        message:'Tìm thành công'
-    }));
-});
-router.get('/timTheoTrangThaiXem/:idNguoiDung/:trangThaiXem', async function (req, res) {
-    const idNguoiDung = req.params.idNguoiDung;
-    const trangThaiXem = req.params.trangThaiXem;
-    if (trangThaiXem == 2){
-        var data = await danhGiaPhim.find({trangThaiXem: 1, idNguoiDung: idNguoiDung});
-        res.end(JSON.stringify({
-            data:data,
-            message:'Tìm xem sau thành công'
-        }));
-    }else if(trangThaiXem == 1){
-        var data = await danhGiaPhim.find({trangThaiXem: 0, idNguoiDung: idNguoiDung});
-        res.end(JSON.stringify({
-            data:data,
-            message:'Tìm đã xem thành công'
-        }));
-    }
-});
-router.get('/getAll/:idNguoiDung', async function (req, res) {
-    const idNguoiDung = req.params.idNguoiDung;
-    var data = await danhGiaPhim.find({});
-    res.end(JSON.stringify({
-        data:data,
-        message:'Lấy tất cả thành công'
-    }));
-});
+// router.get('/getAll/:idNguoiDung', async function (req, res) {
+//     const idNguoiDung = req.params.idNguoiDung;
+//     var data = await danhGiaPhim.find({});
+//     res.end(JSON.stringify({
+//         data:data,
+//         message:'Lấy tất cả thành công'
+//     }));
+// });
 
 
 
@@ -345,6 +311,31 @@ router.get('/getDiemDanhGia/:idPhim', async function(req, res, next) {
             ketQuaDanhGia
         },
         message: "Thành công"
+    }));
+});
+
+//apigetDanhSach
+//Hàm này dùng để tìm kiếm theo idNguoiDung, trangThaiXem, yeuThich, danhGia, temPhim
+//link local: http://localhost:3002/api/getDanhSach/idNguoiDung?yeuThich=-1&trangThaiXem=-1&tenPhim=-1&danhGia=-1
+//vd: http://localhost:3002/api/getDanhSach/651b07d81b75b48fecf2016a?yeuThich=-1&trangThaiXem=-1&tenPhim=-1&danhGia=-1(tìm kiếm tất cả  phim của người dùng này)
+router.get('/getDanhSach/:idNguoiDung', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung;
+    const trangThaiXem = (req.query.trangThaiXem!=-1) ? req.query.trangThaiXem : [0,1,2];
+    const yeuThich = (req.query.yeuThich!=-1) ? req.query.yeuThich : [0,1];
+    const diemDanhGia = (req.query.danhGia!=-1) ? req.query.danhGia : [0,1,2,3,4,5,6,7,8,9,10];
+    const tenPhim = (req.query.tenPhim!="-1") ? "\^"+req.query.tenPhim : "\\w+";
+    var data = await danhGiaPhim.find(
+        {
+            tenPhim : { $regex: tenPhim},
+            danhGia : { $in: diemDanhGia },
+            yeuThich : { $in: yeuThich},
+            trangThaiXem : { $in: trangThaiXem},
+            idNguoiDung : idNguoiDung,
+        }
+    )
+    res.end(JSON.stringify({
+        data:data,
+        message:'Thành công'
     }));
 });
 
