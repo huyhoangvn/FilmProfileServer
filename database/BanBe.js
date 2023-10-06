@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var banBe = new Schema({
     idNguoiDung: String,
-    idDuocTheoDoi: String,
+    idTheoDoi: String,
     trangThai: Number
 });
 
