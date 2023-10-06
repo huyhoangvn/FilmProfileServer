@@ -192,7 +192,7 @@ router.post('/themPhim/:idNguoiDung', MulterConfigs.upload.array('hinhAnh',1), a
                 tenPhim:tenPhim,
                 yeuThich:1,
                 danhGia:-1,
-                trangThaiXem:0,
+                trangThaiXem:-1,
                 trangThai:1,
                 hinhAnh:hinhAnh
             },
@@ -320,9 +320,9 @@ router.get('/getDiemDanhGia/:idPhim', async function(req, res, next) {
 //vd: http://localhost:3002/api/getDanhSach/651b07d81b75b48fecf2016a?yeuThich=-1&trangThaiXem=-1&tenPhim=-1&danhGia=-1(tìm kiếm tất cả  phim của người dùng này)
 router.get('/getDanhSach/:idNguoiDung', async function (req, res) {
     const idNguoiDung = req.params.idNguoiDung;
-    const trangThaiXem = (req.query.trangThaiXem!=-1) ? req.query.trangThaiXem : [0,1,2];
+    const trangThaiXem = (req.query.trangThaiXem!=-1) ? req.query.trangThaiXem : [-1,0,1,2];
     const yeuThich = (req.query.yeuThich!=-1) ? req.query.yeuThich : [0,1];
-    const diemDanhGia = (req.query.danhGia!=-1) ? req.query.danhGia : [0,1,2,3,4,5,6,7,8,9,10];
+    const diemDanhGia = (req.query.danhGia!=-1) ? req.query.danhGia : [-1,0,1,2,3,4,5,6,7,8,9,10];
     const tenPhim = (req.query.tenPhim!="-1") ? "\^"+req.query.tenPhim : "\\w+";
     var data = await danhGiaPhim.find(
         {
