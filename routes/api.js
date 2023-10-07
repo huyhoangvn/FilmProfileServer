@@ -137,13 +137,11 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
         ngaySinh: ngaySinh,
         gioiTinh: gioiTinh,
         moTa: moTa,
-        hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/"+img}
-    var item = await NguoiDung.findOneAndUpdate(filter, update, {new : true})
+        hinhAnh: img}
+    var data = await NguoiDung.findOneAndUpdate(filter, update, {new : true})
 
     res.end(JSON.stringify({
-        data:{
-            id:item._id,
-        },
+        data,
         message: "Sửa thành công"}));
 },
     async function (err, req, res, next) {
