@@ -118,7 +118,7 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
     const ngaySinh = req.body.ngaySinh;
     const gioiTinh = req.body.gioiTinh;
     const moTa = req.body.moTa;
-    const hinhAnh = req.protocol + '://' + req.get('host') +"/public/images/"+req.files.map(file => file.filename);
+    const hinhAnh = req.files.map(file => file.filename);
     let img = "";
     if (hinhAnh.length > 0){
         img = hinhAnh[0];
@@ -137,7 +137,7 @@ router.post('/suaThongTin/:id', MulterConfigs.upload.array('hinhAnh',1), async f
         ngaySinh: ngaySinh,
         gioiTinh: gioiTinh,
         moTa: moTa,
-        hinhAnh: img}
+        hinhAnh: req.protocol + '://' + req.get('host') +"/public/images/"+img}
     var item = await NguoiDung.findOneAndUpdate(filter, update, {new : true})
 
     res.end(JSON.stringify({
