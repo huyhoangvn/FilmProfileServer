@@ -6,6 +6,7 @@ const danhGiaPhim = require('../database/danhGiaPhim');
 const MulterConfigs = require("../config/MulterConfigs");
 const {fileLoader} = require("ejs");
 const {lazyrouter} = require("express/lib/application");
+const {log} = require("debug");
 
 //api đăng kí
 //vd: taiKhoan: admin, matKhau: a
@@ -337,6 +338,25 @@ router.get('/getDanhSach/:idNguoiDung', async function (req, res) {
         data:data,
         message:'Thành công'
     }));
+});
+
+router.post('/suaDanhGia/:idNguoiDung/:idPhim', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung;
+    const idPhim = req.params.idPhim;
+    const trangThaiXem = req.query.trangThaiXem;
+    const yeuThich = req.query.yeuThich;
+    const danhGia = req.query.danhGia;
+    const filter = {idNguoiDung: idNguoiDung, idPhim:idPhim};
+
+    let update = {
+        danhGia: danhGia,
+        trangThaiXem: trangThaiXem,
+        yeuThich: yeuThich}
+
+    var data = await danhGiaPhim.findOneAndUpdate(filter, update, {new : true})
+    res.end(JSON.stringify({
+        data,
+        message: "Sửa thành công"}));
 });
 
 
