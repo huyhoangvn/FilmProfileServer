@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var Thich = new Schema({
-    idNguoiDung: String,
+    idNguoiDung:  {type: mongoose.Schema.Types.ObjectId, ref:'idNguoiDung'},
     idBaiDang: String,
     trangThai: Number
 });
