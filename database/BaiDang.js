@@ -1,14 +1,13 @@
 var mongoose = require('mongoose');
+const {ObjectId} = require("mongodb");
 var Schema = mongoose.Schema;
 
 var baiDang = new Schema({
-    idPhim: String,
+    idDanhGiaPhim: String,
     idNguoiDung: String,
-    tenPhim: String,
     chuDe:String,
     noiDung:String,
     ngayTao:String,
-    hinhAnh: [{type:String}],/*link hinh anh*/
     trangThai:Number
 });
 

@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const mongo = require("mongoose");
-const NguoiDung = require("../database/NguoiDung");
-const danhGiaPhim = require("../database/danhGiaPhim");
+
+const mongo = require('mongoose');
+const NguoiDung = require('../database/NguoiDung')
+const danhGiaPhim = require('../database/DanhGiaPhim');
+const baiDang = require('../database/BaiDang');
+const BanBe = require('../database/BanBe');
 const MulterConfigs = require("../config/MulterConfigs");
-const { fileLoader } = require("ejs");
-const { lazyrouter } = require("express/lib/application");
-const { log } = require("debug");
-const BanBe = require("../database/BanBe");
+const {fileLoader} = require("ejs");
+const {lazyrouter} = require("express/lib/application");
+const {log} = require("debug");
+const {ObjectId} = require("mongodb");
 
 //api đăng kí
 //vd: taiKhoan: admin, matKhau: a
@@ -482,6 +485,108 @@ router.get('/BanBe/:idNguoiDung',async function (req,res){
     
 });
 
+
+// api themBaiDang
+router.post('/themBaiDang/:idNguoiDung/:idDanhGiaPhim', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung
+    const idDanhGiaPhim = req.params.idDanhGiaPhim
+    const chuDe = req.body.chuDe
+    const noiDung = req.body.noiDung
+    const ngayTao = req.body.ngayTao
+    const trangThai = req.body.trangThai
+
+    const data = await baiDang.create({
+        idNguoiDung:idNguoiDung,
+        idDanhGiaPhim: idDanhGiaPhim,
+        chuDe:chuDe,
+        noiDung:noiDung,
+        ngayTao:ngayTao,
+        trangThai:trangThai,
+    });
+    console.log(data)
+
+        res.end(JSON.stringify({
+            data:{
+                idNguoiDung:idNguoiDung,
+                idDanhGiaPhim: idDanhGiaPhim,
+                chuDe:chuDe,
+                noiDung:noiDung,
+                ngayTao:ngayTao,
+                trangThai:trangThai,
+            },
+            message:'Thêm bài đăng thành công'
+        }));
+});
+
+// api baiDangCaNhan
+router.get('/getBaiDangCaNhan/:idNguoiDung', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung;
+    var data = await baiDang.find({idNguoiDung: idNguoiDung})
+    res.end(JSON.stringify({
+        data,
+        message:'Thành công'
+    }));
+});
+
+// api getBaiDangBanBe
+router.get('/getBaiDangCaNhan/:idNguoiDung', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung;
+    var data = await baiDang.find({idNguoiDung: idNguoiDung})
+    res.end(JSON.stringify({
+        data,
+        message:'Thành công'
+    }));
+});
+
+
+router.get('/getBaiDangCaNhan/:idNguoiDung', async function (req, res) {
+    const idNguoiDung = req.params.idNguoiDung;
+    var data = await baiDang.find({idNguoiDung: idNguoiDung})
+    res.end(JSON.stringify({
+        data,
+        message:'Thành công'
+    }));
+});
+
+router.get('/getBaiDangVaBanBe/:idNguoiDung',async function (req,res){
+    const idNguoiDung = req.params.idNguoiDung;
+    var tenNguoiDung = await BanBe.aggregate([
+        {$match: {
+            idNguoiDung: idNguoiDung
+        }},
+        {$addFields: {
+            convertedId: { $toObjectId: "$idTheoDoi" }
+        }},
+        {$lookup: {
+            from: "BaiDang",
+            localField: "idTheoDoi",
+            foreignField: "idNguoiDung",
+            as: "ketQua1"
+        }},
+        {$lookup: {
+            from: "NguoiDung",
+            localField: "convertedId",
+            foreignField: "_id",
+            as: "ketQua2"
+        }},
+        {$unwind: {
+                path: "$ketQua1",
+                preserveNullAndEmptyArrays: false
+        }}
+    ]);
+    const mapping = await tenNguoiDung.map((item) => {
+        return {
+            id: item._id,
+        }
+    })
+
+    res.json({
+        mapping,
+        message:'Thanh Cong',
+        tenNguoiDung
+    });
+});
+
 router.get('/getthembanbe',async (req,res)=>{
     try {
     const themBanBe = await BanBe.find().populate('idNguoiDung');
@@ -491,5 +596,6 @@ router.get('/getthembanbe',async (req,res)=>{
     }   
     
 })
+
 
 module.exports = router;
