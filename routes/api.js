@@ -505,16 +505,21 @@ router.get('/BanBe/:idNguoiDung',async function (req,res){
 });
 
 router.get('/BanBe/:idNguoiDung',async function (req,res){
+    const idTheoDoi = req.params.idTheoDoi;
     const idNguoiDung = req.params.idNguoiDung;
+    const trangThai = req.query.trangThai;
     var themBanBe = await NguoiDung.findOne(NguoiDung.where({idNguoiDung: idNguoiDung,trangThai: 1}));
     if (themBanBe == null){
         await NguoiDung.create({
+            idTheoDoi: idTheoDoi,
+            idNguoiDung:idNguoiDung,
             trangThai:1
         }).then(result => {id = result._id})
 
         res.end(JSON.stringify({
             data:{
-                id:id,
+                idTheoDoi: idTheoDoi,
+                idNguoiDung:idNguoiDung,
                 trangThai:1
             },
             message:'Ket ban thanh cong'
