@@ -1,14 +1,17 @@
 const express = require('express');
 const multer = require('multer');
+const path = require("path");
 const maxSize = 100*1024*1024;
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, '../public/images');
+        cb(null, path.join(__dirname, '../public/images'));
     },
     filename: function(req, file, cb) {
         //dat ten file dc uploade len de khong bi trung lap
-        cb(null, file.originalname)
+        const filename = file.originalname.substring(0, file.originalname.indexOf(".")) + "_" +
+        new Date(Date.now()).toLocaleString().split(',')[0].replaceAll("/", "-") + '_' + Math.round(Math.random() * 10000) + "." + file.mimetype.replace("image/", "");
+        cb(null, filename)
     },
 });
 const filter = (req, file, cb) => {
