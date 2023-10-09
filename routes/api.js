@@ -455,54 +455,6 @@ router.post("/suaDanhGia/:idNguoiDung/:idPhim", async function (req, res) {
   );
 });
 
-router.get("/BanBe/:idNguoiDung", async function (req, res) {
-  const idNguoiDung = req.params.idNguoiDung;
-  const idTheoDoi = req.params.idTheoDoi;
-  var themBanBe = await BanBe.findOne(
-    BanBe.where({ idNguoiDung: idNguoiDung, trangThai: 1 })
-  );
-  if (themBanBe == null) {
-    await BanBe.create({
-      trangThai: 1,
-    }).then((result) => {
-      id = result._id;
-    });
-
-    res.end(
-      JSON.stringify({
-        data: {
-          id: id,
-          trangThai: 1,
-        },
-        message: "Ket ban thanh cong",
-      })
-    );
-  } else {
-    res.end(JSON.stringify({ data: {}, message: "Tài khỏan đã tồn tại" }));
-  }
-});
-
-
-router.get('/BanBe/:idNguoiDung',async function (req,res){
-    const idNguoiDung = req.params.idNguoiDung;
-    var themBanBe = await NguoiDung.findOne(NguoiDung.where({idNguoiDung: idNguoiDung,trangThai: 1}));
-    if (themBanBe == null){
-        await NguoiDung.create({
-            trangThai:1
-        }).then(result => {id = result._id})
-
-        res.end(JSON.stringify({
-            data:{
-                id:id,
-                trangThai:1
-            },
-            message:'Ket ban thanh cong'
-        }));
-    }else{
-        res.end(JSON.stringify({data: {}, message: "Tài khỏan đã tồn tại"}));
-    }
-    
-});
 
 router.get('/BanBe/:idNguoiDung',async function (req,res){
     const idTheoDoi = req.params.idTheoDoi;
