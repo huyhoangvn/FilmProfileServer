@@ -581,24 +581,39 @@ router.get("/getthembanbe", async (req, res) => {
 });
 
 // api xóa bạn bè 
-router.get("/getxoabanbe", async (req,res) => {
- const idTheoDoi = req.params.idTheoDoi;
+router.get("/getxoabanbe/:idTheoDoi/idNguoiDung", async (req,res) => {
+  const idTheoDoi = req.params.idTheoDoi;
   const idNguoiDung = req.params.idNguoiDung;
   const trangThai = req.query.trangThai;
-  var themBanBe = await NguoiDung.findOne(
-    NguoiDung.where({ idNguoiDung: idNguoiDung, trangThai: 0 })
-  );
-    res.end(
-      JSON.stringify({
+
+  try {
+    // Truy vấn cơ sở dữ liệu chính xác
+    const themBanBe = await NguoiDung.findOne({ idNguoiDung: idNguoiDung, trangThai: 0 });
+
+    if (themBanBe) {
+      // Thực hiện thao tác xóa ở đây
+
+      res.json({
         data: {
           idTheoDoi: idTheoDoi,
           idNguoiDung: idNguoiDung,
-          trangThai: 1,
+          trangThai: 0,
         },
         message: "Xóa thành công",
-      })
-    );
+      });
+    } else {
+      res.status(404).json({ message: "Không tìm thấy người dùng phù hợp." });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi server: " + error.message });
+  }
 });
 
+router.get('/getdanhSachNguoiDung', async function (req, res) {
+  const hoTen = req.query.get('hoTen');
+  const hinhAnh = req.query.get('hinhAnh');
+  const danhSachNguoiDung = await NguoiDung.find({ });
+
+});
 
 module.exports = router;
