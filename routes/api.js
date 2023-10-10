@@ -455,8 +455,8 @@ router.post("/suaDanhGia/:idNguoiDung/:idPhim", async function (req, res) {
     })
   );
 });
-
-router.get("/BanBe/:idNguoiDung", async function (req, res) {
+// api them ban be 
+router.get("/get-ban-be/:idNguoiDung", async function (req, res) {
   const idTheoDoi = req.params.idTheoDoi;
   const idNguoiDung = req.params.idNguoiDung;
   const trangThai = req.query.trangThai;
