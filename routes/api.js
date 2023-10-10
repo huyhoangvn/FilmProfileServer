@@ -417,11 +417,13 @@ router.get("/getDanhSach/:idNguoiDung", async function (req, res) {
       : [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const tenPhim = req.query.tenPhim != "-1" ? "^" + req.query.tenPhim : "\\w+";
   var data = await danhGiaPhim.find({
-    tenPhim: { $regex: tenPhim },
-    danhGia: { $in: diemDanhGia },
-    yeuThich: { $in: yeuThich },
-    trangThaiXem: { $in: trangThaiXem },
-    idNguoiDung: idNguoiDung,
+        tenPhim: { $regex: tenPhim },
+        danhGia: { $in: diemDanhGia },
+        yeuThich: { $in: yeuThich },
+        trangThaiXem: { $in: trangThaiXem },
+        idNguoiDung: idNguoiDung,
+        trangThai:1
+
   });
   res.end(
     JSON.stringify({
@@ -469,7 +471,6 @@ router.get("/BanBe/:idNguoiDung", async function (req, res) {
     }).then((result) => {
       id = result._id;
     });
-
     res.end(
       JSON.stringify({
         data: {
@@ -540,29 +541,51 @@ router.get('/getBaiDangVaBanBe/:idNguoiDung',async function (req,res){
             from: "BaiDang",
             localField: "idTheoDoi",
             foreignField: "idNguoiDung",
-            as: "ketQua1"
+            as: "BaiDang"
         }},
         {$lookup: {
             from: "NguoiDung",
             localField: "convertedId",
             foreignField: "_id",
-            as: "ketQua2"
+            as: "NguoiDung"
+        }},
+        {$lookup: {
+            from: "DanhGiaPhim",
+            localField: "idTheoDoi",
+            foreignField: "idNguoiDung",
+            as: "DanhGiaPhim"
         }},
         {$unwind: {
-                path: "$ketQua1",
+                path: "$DanhGiaPhim",
                 preserveNullAndEmptyArrays: false
-        }}
+        }},
+        {$unwind: {
+                path: "$NguoiDung",
+                preserveNullAndEmptyArrays: false
+            }},
+        {$unwind: {
+                path: "$BaiDang",
+                preserveNullAndEmptyArrays: false
+            }}
     ]);
     const mapping = await tenNguoiDung.map((item) => {
         return {
             id: item._id,
+            hoTen: item.NguoiDung.hoTen,
+            ngayTao: item.BaiDang.ngayTao,
+            noiDung: item.BaiDang.noiDung,
+            chuDe: item.BaiDang.chuDe,
+            danhGia: item.DanhGiaPhim.danhGia,
+            tenPhim: item.DanhGiaPhim.tenPhim,
+            hinhAnhNguoiDung: item.NguoiDung.hinhAnh,
+            hinhAnhPhim: item.DanhGiaPhim.hinhAnh
+
         }
     })
 
     res.json({
         mapping,
-        message:'Thanh Cong',
-        tenNguoiDung
+        message:'Thanh Cong'
     });
 });
 
