@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+const {ObjectId} = require("mongodb");
 var Schema = mongoose.Schema;
 
 var nguoiDungSchema = new Schema({
@@ -12,4 +13,4 @@ var nguoiDungSchema = new Schema({
     trangThai:Number
 });
 
-module.exports = mongoose.model('NguoiDung', nguoiDungSchema , 'profile');
+module.exports = mongoose.model('NguoiDung', nguoiDungSchema , 'NguoiDung');
