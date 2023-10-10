@@ -450,8 +450,8 @@ router.post("/suaDanhGia/:idNguoiDung/:idPhim", async function (req, res) {
     })
   );
 });
-
-router.get("/BanBe/:idNguoiDung", async function (req, res) {
+// api them ban be 
+router.get("/get-ban-be/:idNguoiDung", async function (req, res) {
   const idTheoDoi = req.params.idTheoDoi;
   const idNguoiDung = req.params.idNguoiDung;
   const trangThai = req.query.trangThai;
@@ -481,8 +481,8 @@ router.get("/BanBe/:idNguoiDung", async function (req, res) {
     res.end(JSON.stringify({ data: {}, message: "Tài khỏan đã tồn tại" }));
   }
 });
-
-router.get("/getthembanbe", async (req, res) => {
+// them bạn bè và người dùng
+router.get("/get-them-ban-be", async (req, res) => {
   try {
     const themBanBe = await BanBe.find().populate("idTheoDoi");
     res.status(200).json(themBanBe);
