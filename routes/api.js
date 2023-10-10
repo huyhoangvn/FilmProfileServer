@@ -580,5 +580,25 @@ router.get("/getthembanbe", async (req, res) => {
   }
 });
 
+// api xóa bạn bè 
+router.get("/getxoabanbe", async (req,res) => {
+ const idTheoDoi = req.params.idTheoDoi;
+  const idNguoiDung = req.params.idNguoiDung;
+  const trangThai = req.query.trangThai;
+  var themBanBe = await NguoiDung.findOne(
+    NguoiDung.where({ idNguoiDung: idNguoiDung, trangThai: 0 })
+  );
+    res.end(
+      JSON.stringify({
+        data: {
+          idTheoDoi: idTheoDoi,
+          idNguoiDung: idNguoiDung,
+          trangThai: 1,
+        },
+        message: "Xóa thành công",
+      })
+    );
+});
+
 
 module.exports = router;
