@@ -15,9 +15,7 @@ const BanBe = require("../database/BanBe");
 //nếu đã tồn tại tài khoản thì sẽ trả về data rỗng và message đăng ký thất bại
 //link local: http://localhost:3002/api/themTaiKhoan
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/themTaiKhoan
-router.post(
-  "/themTaiKhoan",
-  MulterConfigs.upload.array("hinhAnh", 1),
+router.post("/themTaiKhoan",MulterConfigs.upload.array("hinhAnh", 1),
   async function (req, res) {
     const taiKhoan = req.body.taiKhoan;
     const matKhau = req.body.matKhau;
@@ -146,8 +144,7 @@ router.get("/getThongTinCaNhan/:id", async function (req, res, next) {
 //vd: http://localhost:3002/api/suaThongTin/65138141d7cf634a93bb9ef3
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/suaThongTin/:id
 //vd: https://gratis-dusty-cabinet.glitch.me/api/suaThongTin/65138141d7cf634a93bb9ef3
-router.post(
-  "/suaThongTin/:id",
+router.post( "/suaThongTin/:id",
   MulterConfigs.upload.array("hinhAnh", 1),
   async function (req, res, next) {
     const id = req.params.id;
@@ -286,8 +283,7 @@ router.post(
 //vd: http://localhost:3002/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/:idPhim/:idNguoiDung
 //vd: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
-router.get(
-  "/isPhimTrongDanhSach/:idPhim/:idNguoiDung",
+router.get("/isPhimTrongDanhSach/:idPhim/:idNguoiDung",
   async function (req, res) {
     const idPhim = req.params.idPhim;
     const idNguoiDung = req.params.idNguoiDung;
@@ -455,41 +451,48 @@ router.post("/suaDanhGia/:idNguoiDung/:idPhim", async function (req, res) {
   );
 });
 
+router.get("/BanBe/:idNguoiDung", async function (req, res) {
+  const idTheoDoi = req.params.idTheoDoi;
+  const idNguoiDung = req.params.idNguoiDung;
+  const trangThai = req.query.trangThai;
+  var themBanBe = await NguoiDung.findOne(
+    NguoiDung.where({ idNguoiDung: idNguoiDung, trangThai: 1 })
+  );
+  if (themBanBe == null) {
+    await NguoiDung.create({
+      idTheoDoi: idTheoDoi,
+      idNguoiDung: idNguoiDung,
+      trangThai: 1,
+    }).then((result) => {
+      id = result._id;
+    });
 
-router.get('/BanBe/:idNguoiDung',async function (req,res){
-    const idTheoDoi = req.params.idTheoDoi;
-    const idNguoiDung = req.params.idNguoiDung;
-    const trangThai = req.query.trangThai;
-    var themBanBe = await NguoiDung.findOne(NguoiDung.where({idNguoiDung: idNguoiDung,trangThai: 1}));
-    if (themBanBe == null){
-        await NguoiDung.create({
-            idTheoDoi: idTheoDoi,
-            idNguoiDung:idNguoiDung,
-            trangThai:1
-        }).then(result => {id = result._id})
-
-        res.end(JSON.stringify({
-            data:{
-                idTheoDoi: idTheoDoi,
-                idNguoiDung:idNguoiDung,
-                trangThai:1
-            },
-            message:'Ket ban thanh cong'
-        }));
-    }else{
-        res.end(JSON.stringify({data: {}, message: "Tài khỏan đã tồn tại"}));
-    }
-    
+    res.end(
+      JSON.stringify({
+        data: {
+          idTheoDoi: idTheoDoi,
+          idNguoiDung: idNguoiDung,
+          trangThai: 1,
+        },
+        message: "Ket ban thanh cong",
+      })
+    );
+  } else {
+    res.end(JSON.stringify({ data: {}, message: "Tài khỏan đã tồn tại" }));
+  }
 });
 
-router.get('/getthembanbe',async (req,res)=>{
-    try {
-    const themBanBe = await BanBe.find().populate('idNguoiDung');
+router.get("/getthembanbe", async (req, res) => {
+  try {
+    const themBanBe = await BanBe.find().populate("idTheoDoi");
     res.status(200).json(themBanBe);
-    }   catch (err) {
-        res.status(500).json(err.message);
-    }   
-    
-})
+  } catch (err) {
+    res.status(500).json({
+      data:{
+
+      }
+    });
+  }
+});
 
 module.exports = router;
