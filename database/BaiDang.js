@@ -7,7 +7,7 @@ var baiDang = new Schema({
     idNguoiDung: {type: mongoose.Schema.Types.ObjectId, ref:'NguoiDung'},
     chuDe:String,
     noiDung:String,
-    ngayTao:String,
+    ngayTao:Date,
     trangThai:Number
 });
 

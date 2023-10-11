@@ -1,16 +1,19 @@
 const express = require("express");
 const router = express.Router();
-
-const mongo = require('mongoose');
-const NguoiDung = require('../database/NguoiDung')
-const danhGiaPhim = require('../database/DanhGiaPhim');
-const baiDang = require('../database/BaiDang');
-const BanBe = require('../database/BanBe');
 const MulterConfigs = require("../config/MulterConfigs");
 const {fileLoader} = require("ejs");
 const {lazyrouter} = require("express/lib/application");
 const {log} = require("debug");
 const {ObjectId} = require("mongodb");
+//Model
+const mongo = require('mongoose');
+const NguoiDung = require('../database/NguoiDung')
+const danhGiaPhim = require('../database/DanhGiaPhim');
+const baiDang = require('../database/BaiDang');
+const BanBe = require('../database/BanBe');
+//Controller
+const {getBaiDangBanBe, getBaiDangCaNhan} = require('../controller/DangBaiController');
+
 
 //api đăng kí
 //vd: taiKhoan: admin, matKhau: a
@@ -111,7 +114,7 @@ router.post("/dangNhap", async function (req, res, next) {
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/getThongTinCaNhan/:id
 //vd: https://gratis-dusty-cabinet.glitch.me/api/getThongTinCaNhan/65138141d7cf634a93bb9ef3
 router.get("/getThongTinCaNhan/:idNguoiDung", async function (req, res, next) {
-  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+  const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
   const query = NguoiDung.where({ _id: idNguoiDung });
   const item = await query.findOne();
 
@@ -140,7 +143,7 @@ router.get("/getThongTinCaNhan/:idNguoiDung", async function (req, res, next) {
 router.post( "/suaThongTin/:idNguoiDung",
   MulterConfigs.upload.array("hinhAnh", 1),
   async function (req, res, next) {
-    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+    const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
     const hoTen = req.body.hoTen;
     const ngaySinh = req.body.ngaySinh;
     const gioiTinh = req.body.gioiTinh;
@@ -203,7 +206,7 @@ router.post( "/suaThongTin/:idNguoiDung",
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/themPhim/:id
 //vd: https://gratis-dusty-cabinet.glitch.me/api/themPhim/65138141d7cf634a93bb9ef3
 router.post("/themPhim/:idNguoiDung", MulterConfigs.upload.array("hinhAnh", 1), async function (req, res) {
-    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+    const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
     const idPhim = req.body.idPhim;
     const tenPhim = req.body.tenPhim;
     const hinhAnh = req.body.hinhAnh;
@@ -275,7 +278,7 @@ router.post("/themPhim/:idNguoiDung", MulterConfigs.upload.array("hinhAnh", 1), 
 //vd: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
 router.get("/isPhimTrongDanhSach/:idPhim/:idNguoiDung", async function (req, res) {
     const idPhim = req.params.idPhim;
-    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+    const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
     var phimDaThem = await danhGiaPhim.findOne(
       danhGiaPhim.where({
         idNguoiDung: idNguoiDung,
@@ -309,7 +312,7 @@ router.get("/isPhimTrongDanhSach/:idPhim/:idNguoiDung", async function (req, res
 //vd: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
 router.get("/xoaKhoiDanhSach/:idPhim/:idNguoiDung", async function (req, res) {
   const idPhim = req.params.idPhim;
-  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+  const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
   var phimDaThem = await danhGiaPhim.findOne(
     danhGiaPhim.where({
       idPhim: idPhim,
@@ -337,15 +340,6 @@ router.get("/xoaKhoiDanhSach/:idPhim/:idNguoiDung", async function (req, res) {
     );
   }
 });
-
-// router.get('/getAll/:idNguoiDung', async function (req, res) {
-//     const idNguoiDung = req.params.idNguoiDung;
-//     var data = await danhGiaPhim.find({});
-//     res.end(JSON.stringify({
-//         data:data,
-//         message:'Lấy tất cả thành công'
-//     }));
-// });
 
 // Lấy api lấy trung bình điểm đánh giá phim của người dùng ứng dụng theo id phim
 //link local: http://localhost:3002/api/getDiemDanhGia/:idPhim
@@ -393,7 +387,7 @@ router.get("/getDiemDanhGia/:idPhim", async function (req, res, next) {
 //link local: http://localhost:3002/api/getDanhSach/idNguoiDung?yeuThich=-1&trangThaiXem=-1&tenPhim=-1&danhGia=-1
 //vd: http://localhost:3002/api/getDanhSach/651b07d81b75b48fecf2016a?yeuThich=-1&trangThaiXem=-1&tenPhim=-1&danhGia=-1(tìm kiếm tất cả  phim của người dùng này)
 router.get("/getDanhSach/:idNguoiDung", async function (req, res) {
-  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+  const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
   const trangThaiXem = req.query.trangThaiXem != -1 ? req.query.trangThaiXem : [-1, 0, 1, 2];
   const yeuThich = req.query.yeuThich != -1 ? req.query.yeuThich : [0, 1];
   const diemDanhGia = req.query.danhGia != -1 ? req.query.danhGia : [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -415,13 +409,15 @@ router.get("/getDanhSach/:idNguoiDung", async function (req, res) {
   );
 });
 
+//Sửa đánh giá phim của người dùng hiện tại
+//VD: http://localhost:3002/api/getDanhSach/65250e1428c7217419ff3e9d?yeuThich=-1&trangThaiXem=-1&tenPhim=-1&danhGia=-1
 router.post("/suaDanhGia/:idNguoiDung/:idPhim", async function (req, res) {
-  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+  const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
   const idPhim = req.params.idPhim;
   const trangThaiXem = req.query.trangThaiXem;
   const yeuThich = req.query.yeuThich;
   const danhGia = req.query.danhGia;
-  const filter = { idNguoiDung: idNguoiDung, idPhim: idPhim };
+  const filter = { idNguoiDung: idNguoiDung, idPhim: idPhim, trangThai: 1 };
 
   let update = {
     danhGia: danhGia,
@@ -438,11 +434,43 @@ router.post("/suaDanhGia/:idNguoiDung/:idPhim", async function (req, res) {
   );
 });
 
+//Thêm bài đăng từ đánh giá phim của người dùng hiện tại
+//VD: http://localhost:3002/api/themBaiDang/6523a07b075e06d97c19dda0/6523a035075e06d97c19dd9d
+//raw: {"chuDe":"Đây là chủ đề của tôi", "noiDung":"Đây là nội dung của tôi"}
+router.post('/themBaiDang/:idNguoiDung/:idDanhGiaPhim', async function (req, res) {
+    const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
+    const idDanhGiaPhim = new mongo.Types.ObjectId(req.params.idDanhGiaPhim);
+    const chuDe = req.body.chuDe;
+    const noiDung = req.body.noiDung;
+    const ngayTao = new Date().toISOString();
 
+    const data = await baiDang.create({
+        idNguoiDung:idNguoiDung,
+        idDanhGiaPhim: idDanhGiaPhim,
+        chuDe:chuDe,
+        noiDung:noiDung,
+        ngayTao:ngayTao,
+        trangThai : 1,
+    })
+
+    res.end(JSON.stringify({
+        data,
+        message:'Thêm bài đăng thành công'
+    }));
+});
+
+//Hiển thị tất cả bài đăng cá nhân
+//VD: http://localhost:3002/api/getBaiDangCaNhan/6523a035075e06d97c19dd9d
+router.get('/getBaiDangCaNhan/:idNguoiDung', getBaiDangCaNhan);
+
+//Hiển thị tất cả bài đăng của bạn bè
+//VD: http://localhost:3002/api/getBaiDangBanBe/6523a07b075e06d97c19dda0
+router.get('/getBaiDangBanBe/:idNguoiDung', getBaiDangBanBe);
+
+//Chưa test
 router.get("/themBanBe/:idNguoiDung", async function (req, res) {
-  const idTheoDoi = mongo.Schema.Types.ObjectId(req.params.idTheoDoi);
-  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
-  const trangThai = req.query.trangThai;
+  const idTheoDoi = new mongo.Types.ObjectId(req.params.idTheoDoi);
+  const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
   var themBanBe = await NguoiDung.findOne(
     NguoiDung.where({ idNguoiDung: idNguoiDung, trangThai: 1 })
   );
@@ -469,124 +497,10 @@ router.get("/themBanBe/:idNguoiDung", async function (req, res) {
   }
 });
 
-// api themBaiDang
-router.post('/themBaiDang/:idNguoiDung/:idDanhGiaPhim', async function (req, res) {
-    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
-    const idDanhGiaPhim = mongo.Schema.Types.ObjectId(req.params.idDanhGiaPhim);
-    const chuDe = req.body.chuDe;
-    const noiDung = req.body.noiDung;
-    const ngayTao = req.body.ngayTao;
-    const trangThai = req.body.trangThai;
-
-    const data = await baiDang.create({
-        idNguoiDung:idNguoiDung,
-        idDanhGiaPhim: idDanhGiaPhim,
-        chuDe:chuDe,
-        noiDung:noiDung,
-        ngayTao:ngayTao,
-        trangThai:trangThai,
-    });
-    console.log(data)
-
-        res.end(JSON.stringify({
-            data:{
-                idNguoiDung:idNguoiDung,
-                idDanhGiaPhim: idDanhGiaPhim,
-                chuDe:chuDe,
-                noiDung:noiDung,
-                ngayTao:ngayTao,
-                trangThai:trangThai,
-            },
-            message:'Thêm bài đăng thành công'
-        }));
-});
-
-// api baiDangCaNhan
-router.get('/getBaiDangCaNhan/:idNguoiDung', async function (req, res) {
-    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
-    var data = await baiDang.find({idNguoiDung: idNguoiDung})
-    res.end(JSON.stringify({
-        data,
-        message:'Thành công'
-    }));
-});
-
-router.get('/getBaiDangBanBe/:idNguoiDung',async function (req,res){
-    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
-    var tenNguoiDung = await BanBe.aggregate([
-        {$match: {
-            idNguoiDung: idNguoiDung
-        }},
-        {$lookup: {
-            from: "BaiDang",
-            localField: "idTheoDoi",
-            foreignField: "idNguoiDung",
-            as: "KetQuaBaiDang"
-        }},
-        {$unwind: {
-          path: "$KetQuaBaiDang",
-          preserveNullAndEmptyArrays: false
-        }},
-        {$lookup: {
-            from: "NguoiDung",
-            localField: "idTheoDoi",
-            foreignField: "_id",
-            as: "KetQuaBanBe"
-        }},
-        {$unwind: {
-          path: "$NguoiDung",
-          preserveNullAndEmptyArrays: false
-        }},
-        {$lookup: {
-            from: "DanhGiaPhim",
-            localField: "KetQuaBaiDang.idDanhGiaPhim",
-            foreignField: "_id",
-            as: "KetQuaDanhGiaPhim"
-        }},
-        {$unwind: {
-                path: "$DanhGiaPhim",
-                preserveNullAndEmptyArrays: false
-        }}
-    ]);
-    const mapping = await tenNguoiDung.map((item) => {
-        return {
-            id: item._id,
-            hoTen: item.NguoiDung.hoTen,
-            ngayTao: item.BaiDang.ngayTao,
-            noiDung: item.BaiDang.noiDung,
-            chuDe: item.BaiDang.chuDe,
-            danhGia: item.DanhGiaPhim.danhGia,
-            tenPhim: item.DanhGiaPhim.tenPhim,
-            hinhAnhNguoiDung: item.NguoiDung.hinhAnh,
-            hinhAnhPhim: item.DanhGiaPhim.hinhAnh
-
-        }
-    })
-
-    res.json({
-        mapping,
-        message:'Thanh Cong'
-    });
-});
-
-
-router.get("/getDanhSachBanBe", async (req, res) => {
-  try {
-    const themBanBe = await BanBe.find().populate("idTheoDoi");
-    res.status(200).json(themBanBe);
-  } catch (err) {
-    res.status(500).json({
-      data:{
-
-      }
-    });
-  }
-});
-
-// api xóa bạn bè 
-router.get("/getxoabanbe/:idTheoDoi/idNguoiDung", async (req,res) => {
-  const idTheoDoi = mongo.Schema.Types.ObjectId(req.params.idTheoDoi);
-  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+//Chưa test
+router.get("/xoaBanbe/:idTheoDoi/idNguoiDung", async (req,res) => {
+  const idTheoDoi = new mongo.Types.ObjectId(req.params.idTheoDoi);
+  const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
   const trangThai = req.query.trangThai;
 
   try {
@@ -612,10 +526,61 @@ router.get("/getxoabanbe/:idTheoDoi/idNguoiDung", async (req,res) => {
   }
 });
 
-// router.get('/getdanhSachNguoiDung', async function (req, res) {
-//   const hoTen = req.query.get('hoTen');
-//   const hinhAnh = req.query.get('hinhAnh');
-//   const danhSachNguoiDung = await NguoiDung.find({ });
-// });
+//Chưa test
+router.get("/getDanhSachBanBe", async (req, res) => {
+  try {
+    const themBanBe = await BanBe.find().populate("idTheoDoi");
+    res.status(200).json(themBanBe);
+  } catch (err) {
+    res.status(500).json({
+      data:{
+
+      }
+    });
+  }
+});
+
+//Lấy danh sách người dùng và hiển thị nếu người dùng đó mình đã theo dõi hay chưa
+//VD: http://localhost:3002/api/getDanhSachTimNguoiDung?timKiemTen=P&trang=1 (Mỗi trang hiển thị 10 người)
+router.get('/getDanhSachTimNguoiDung', async function (req, res) {
+  const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
+  const timKiemTen = req.query.timKiemTen;
+  const trang = req.query.trang;
+  var data = await NguoiDung.aggregate([
+    {$match: {
+        hoTen: {$regex: timKiemTen},
+        trangThai: 1
+    }},
+    {
+      $skip: (trang-1)*10,
+    },
+    {
+      $limit: 10,
+    },
+  ]);
+  res.end(JSON.stringify({
+      data,
+      message:'Thành công'
+  }));  
+});
+
+//Kiểm tra xem người dùng có thuộc danh sách kết bạn của người dùng hiện tại hay không
+//VD: http://localhost:3002/api/isTheoDoi/6523a07b075e06d97c19dda0/6523a035075e06d97c19dd9d
+router.get('/isTheoDoi/:idNguoiDungHienTai/:idNguoiDungBatKy', async function (req, res) {
+  const idNguoiDungHienTai = new mongo.Types.ObjectId(req.params.idNguoiDungHienTai);
+  const idNguoiDungBatKy = new mongo.Types.ObjectId(req.params.idNguoiDungBatKy);
+  var ketQua = await BanBe.aggregate([
+    {$match: {
+      idNguoiDung: idNguoiDungHienTai,
+      idTheoDoi: idNguoiDungBatKy,
+      trangThai: 1
+    }},
+  ]);
+  data = (ketQua.length > 0)?true:false;
+  res.end(JSON.stringify({
+      data,
+      message:'Thành công'
+  }));  
+});
 
 module.exports = router;
