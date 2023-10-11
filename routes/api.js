@@ -609,11 +609,33 @@ router.get("/getxoabanbe/:idTheoDoi/idNguoiDung", async (req,res) => {
   }
 });
 
-router.get('/getdanhSachNguoiDung', async function (req, res) {
+router.get('/getdanhSachNguoiDung/NguoiDung', async function (req, res) {
   const hoTen = req.query.get('hoTen');
   const hinhAnh = req.query.get('hinhAnh');
-  const danhSachNguoiDung = await NguoiDung.find({ });
-
+  try {
+    const danhSachNguoiDung = await NguoiDung.find({ });
+    if(danhSachNguoiDung){
+      res.status(500).json({ 
+        data: {
+        id: objId,
+        hoTen: hoTen,
+        ngaySinh: "dd-mm-yyyy",
+        gioiTinh: 2,
+        moTa: "gioi thieu",
+        hinhAnh:
+          req.protocol +
+          "://" +
+          req.get("host") +
+          "/public/images/" +
+          hinhAnh,
+        trangThai: 1,
+        },
+        message: "Thành công",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi server: " + error.message });
+  }
 });
 
 module.exports = router;
