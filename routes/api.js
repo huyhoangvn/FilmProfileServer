@@ -73,11 +73,11 @@ router.post("/themTaiKhoan",MulterConfigs.upload.array("hinhAnh", 1),
 //link local: http://localhost:3002/api/dangNhap
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/dangNhap
 router.post("/dangNhap", async function (req, res, next) {
-  const username = req.body.taiKhoan;
-  const password = req.body.matKhau;
+  const taiKhoan = req.body.taiKhoan;
+  const matKhau = req.body.matKhau;
   const query = NguoiDung.where({
-    taiKhoan: username,
-    matKhau: password,
+    taiKhoan: taiKhoan,
+    matKhau: matKhau,
     trangThai: 1,
   });
   var item = await query.findOne();
@@ -95,12 +95,7 @@ router.post("/dangNhap", async function (req, res, next) {
           ngaySinh: item.ngaySinh,
           gioiTinh: item.gioiTinh,
           moTa: item.moTa,
-          hinhAnh:
-            req.protocol +
-            "://" +
-            req.get("host") +
-            "/public/images/" +
-            item.hinhAnh,
+          hinhAnh: req.protocol + "://" + req.get("host") + "/public/images/" + item.hinhAnh,
           trangThai: item.trangThai,
         },
         message: "Đăng nhập thành công",
@@ -115,9 +110,9 @@ router.post("/dangNhap", async function (req, res, next) {
 //vd: http://localhost:3002/api/getThongTinCaNhan/65138141d7cf634a93bb9ef3
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/getThongTinCaNhan/:id
 //vd: https://gratis-dusty-cabinet.glitch.me/api/getThongTinCaNhan/65138141d7cf634a93bb9ef3
-router.get("/getThongTinCaNhan/:id", async function (req, res, next) {
-  const id = req.params.id;
-  const query = NguoiDung.where({ _id: id });
+router.get("/getThongTinCaNhan/:idNguoiDung", async function (req, res, next) {
+  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+  const query = NguoiDung.where({ _id: idNguoiDung });
   const item = await query.findOne();
 
   res.end(
@@ -128,12 +123,7 @@ router.get("/getThongTinCaNhan/:id", async function (req, res, next) {
         ngaySinh: item.ngaySinh,
         gioiTinh: item.gioiTinh,
         moTa: item.moTa,
-        hinhAnh:
-          req.protocol +
-          "://" +
-          req.get("host") +
-          "/public/images/" +
-          item.hinhAnh,
+        hinhAnh: req.protocol + "://" + req.get("host") + "/public/images/" + item.hinhAnh,
         trangThai: item.trangThai,
       },
       message: "Lấy thông tin thành công",
@@ -147,10 +137,10 @@ router.get("/getThongTinCaNhan/:id", async function (req, res, next) {
 //vd: http://localhost:3002/api/suaThongTin/65138141d7cf634a93bb9ef3
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/suaThongTin/:id
 //vd: https://gratis-dusty-cabinet.glitch.me/api/suaThongTin/65138141d7cf634a93bb9ef3
-router.post( "/suaThongTin/:id",
+router.post( "/suaThongTin/:idNguoiDung",
   MulterConfigs.upload.array("hinhAnh", 1),
   async function (req, res, next) {
-    const id = req.params.id;
+    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
     const hoTen = req.body.hoTen;
     const ngaySinh = req.body.ngaySinh;
     const gioiTinh = req.body.gioiTinh;
@@ -168,7 +158,7 @@ router.post( "/suaThongTin/:id",
       //Có thể lấy luôn hoTen, NgaySinh, GioiTinh cũ nếu truyền vào rỗng luôn
       //VD: hoTen = result.hoTen,...
     }
-    const filter = { _id: id };
+    const filter = { _id: idNguoiDung };
     let update = {
       hoTen: hoTen,
       ngaySinh: ngaySinh,
@@ -212,11 +202,8 @@ router.post( "/suaThongTin/:id",
 //vd: http://localhost:3002/api/themPhim/65138141d7cf634a93bb9ef3
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/themPhim/:id
 //vd: https://gratis-dusty-cabinet.glitch.me/api/themPhim/65138141d7cf634a93bb9ef3
-router.post(
-  "/themPhim/:idNguoiDung",
-  MulterConfigs.upload.array("hinhAnh", 1),
-  async function (req, res) {
-    const idNguoiDung = req.params.idNguoiDung;
+router.post("/themPhim/:idNguoiDung", MulterConfigs.upload.array("hinhAnh", 1), async function (req, res) {
+    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
     const idPhim = req.body.idPhim;
     const tenPhim = req.body.tenPhim;
     const hinhAnh = req.body.hinhAnh;
@@ -286,10 +273,9 @@ router.post(
 //vd: http://localhost:3002/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
 //linh glitch: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/:idPhim/:idNguoiDung
 //vd: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
-router.get("/isPhimTrongDanhSach/:idPhim/:idNguoiDung",
-  async function (req, res) {
+router.get("/isPhimTrongDanhSach/:idPhim/:idNguoiDung", async function (req, res) {
     const idPhim = req.params.idPhim;
-    const idNguoiDung = req.params.idNguoiDung;
+    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
     var phimDaThem = await danhGiaPhim.findOne(
       danhGiaPhim.where({
         idNguoiDung: idNguoiDung,
@@ -323,7 +309,7 @@ router.get("/isPhimTrongDanhSach/:idPhim/:idNguoiDung",
 //vd: https://gratis-dusty-cabinet.glitch.me/api/isPhimTrongDanhSach/512218/65138141d7cf634a93bb9ef3
 router.get("/xoaKhoiDanhSach/:idPhim/:idNguoiDung", async function (req, res) {
   const idPhim = req.params.idPhim;
-  const idNguoiDung = req.params.idNguoiDung;
+  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
   var phimDaThem = await danhGiaPhim.findOne(
     danhGiaPhim.where({
       idPhim: idPhim,
@@ -407,14 +393,10 @@ router.get("/getDiemDanhGia/:idPhim", async function (req, res, next) {
 //link local: http://localhost:3002/api/getDanhSach/idNguoiDung?yeuThich=-1&trangThaiXem=-1&tenPhim=-1&danhGia=-1
 //vd: http://localhost:3002/api/getDanhSach/651b07d81b75b48fecf2016a?yeuThich=-1&trangThaiXem=-1&tenPhim=-1&danhGia=-1(tìm kiếm tất cả  phim của người dùng này)
 router.get("/getDanhSach/:idNguoiDung", async function (req, res) {
-  const idNguoiDung = req.params.idNguoiDung;
-  const trangThaiXem =
-    req.query.trangThaiXem != -1 ? req.query.trangThaiXem : [-1, 0, 1, 2];
+  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+  const trangThaiXem = req.query.trangThaiXem != -1 ? req.query.trangThaiXem : [-1, 0, 1, 2];
   const yeuThich = req.query.yeuThich != -1 ? req.query.yeuThich : [0, 1];
-  const diemDanhGia =
-    req.query.danhGia != -1
-      ? req.query.danhGia
-      : [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const diemDanhGia = req.query.danhGia != -1 ? req.query.danhGia : [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const tenPhim = req.query.tenPhim != "-1" ? "^" + req.query.tenPhim : "\\w+";
   var data = await danhGiaPhim.find({
         tenPhim: { $regex: tenPhim },
@@ -434,7 +416,7 @@ router.get("/getDanhSach/:idNguoiDung", async function (req, res) {
 });
 
 router.post("/suaDanhGia/:idNguoiDung/:idPhim", async function (req, res) {
-  const idNguoiDung = req.params.idNguoiDung;
+  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
   const idPhim = req.params.idPhim;
   const trangThaiXem = req.query.trangThaiXem;
   const yeuThich = req.query.yeuThich;
@@ -455,10 +437,11 @@ router.post("/suaDanhGia/:idNguoiDung/:idPhim", async function (req, res) {
     })
   );
 });
-// api them ban be 
-router.get("/get-ban-be/:idNguoiDung", async function (req, res) {
-  const idTheoDoi = req.params.idTheoDoi;
-  const idNguoiDung = req.params.idNguoiDung;
+
+
+router.get("/themBanBe/:idNguoiDung", async function (req, res) {
+  const idTheoDoi = mongo.Schema.Types.ObjectId(req.params.idTheoDoi);
+  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
   const trangThai = req.query.trangThai;
   var themBanBe = await NguoiDung.findOne(
     NguoiDung.where({ idNguoiDung: idNguoiDung, trangThai: 1 })
@@ -488,12 +471,12 @@ router.get("/get-ban-be/:idNguoiDung", async function (req, res) {
 
 // api themBaiDang
 router.post('/themBaiDang/:idNguoiDung/:idDanhGiaPhim', async function (req, res) {
-    const idNguoiDung = req.params.idNguoiDung
-    const idDanhGiaPhim = req.params.idDanhGiaPhim
-    const chuDe = req.body.chuDe
-    const noiDung = req.body.noiDung
-    const ngayTao = req.body.ngayTao
-    const trangThai = req.body.trangThai
+    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
+    const idDanhGiaPhim = mongo.Schema.Types.ObjectId(req.params.idDanhGiaPhim);
+    const chuDe = req.body.chuDe;
+    const noiDung = req.body.noiDung;
+    const ngayTao = req.body.ngayTao;
+    const trangThai = req.body.trangThai;
 
     const data = await baiDang.create({
         idNguoiDung:idNguoiDung,
@@ -520,7 +503,7 @@ router.post('/themBaiDang/:idNguoiDung/:idDanhGiaPhim', async function (req, res
 
 // api baiDangCaNhan
 router.get('/getBaiDangCaNhan/:idNguoiDung', async function (req, res) {
-    const idNguoiDung = req.params.idNguoiDung;
+    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
     var data = await baiDang.find({idNguoiDung: idNguoiDung})
     res.end(JSON.stringify({
         data,
@@ -528,45 +511,42 @@ router.get('/getBaiDangCaNhan/:idNguoiDung', async function (req, res) {
     }));
 });
 
-router.get('/getBaiDangVaBanBe/:idNguoiDung',async function (req,res){
-    const idNguoiDung = req.params.idNguoiDung;
+router.get('/getBaiDangBanBe/:idNguoiDung',async function (req,res){
+    const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
     var tenNguoiDung = await BanBe.aggregate([
         {$match: {
             idNguoiDung: idNguoiDung
-        }},
-        {$addFields: {
-            convertedId: { $toObjectId: "$idTheoDoi" }
         }},
         {$lookup: {
             from: "BaiDang",
             localField: "idTheoDoi",
             foreignField: "idNguoiDung",
-            as: "BaiDang"
+            as: "KetQuaBaiDang"
+        }},
+        {$unwind: {
+          path: "$KetQuaBaiDang",
+          preserveNullAndEmptyArrays: false
         }},
         {$lookup: {
             from: "NguoiDung",
-            localField: "convertedId",
+            localField: "idTheoDoi",
             foreignField: "_id",
-            as: "NguoiDung"
+            as: "KetQuaBanBe"
+        }},
+        {$unwind: {
+          path: "$NguoiDung",
+          preserveNullAndEmptyArrays: false
         }},
         {$lookup: {
             from: "DanhGiaPhim",
-            localField: "idTheoDoi",
-            foreignField: "idNguoiDung",
-            as: "DanhGiaPhim"
+            localField: "KetQuaBaiDang.idDanhGiaPhim",
+            foreignField: "_id",
+            as: "KetQuaDanhGiaPhim"
         }},
         {$unwind: {
                 path: "$DanhGiaPhim",
                 preserveNullAndEmptyArrays: false
-        }},
-        {$unwind: {
-                path: "$NguoiDung",
-                preserveNullAndEmptyArrays: false
-            }},
-        {$unwind: {
-                path: "$BaiDang",
-                preserveNullAndEmptyArrays: false
-            }}
+        }}
     ]);
     const mapping = await tenNguoiDung.map((item) => {
         return {
@@ -590,7 +570,7 @@ router.get('/getBaiDangVaBanBe/:idNguoiDung',async function (req,res){
 });
 
 
-router.get("/getthembanbe", async (req, res) => {
+router.get("/getDanhSachBanBe", async (req, res) => {
   try {
     const themBanBe = await BanBe.find().populate("idTheoDoi");
     res.status(200).json(themBanBe);
@@ -605,8 +585,8 @@ router.get("/getthembanbe", async (req, res) => {
 
 // api xóa bạn bè 
 router.get("/getxoabanbe/:idTheoDoi/idNguoiDung", async (req,res) => {
-  const idTheoDoi = req.params.idTheoDoi;
-  const idNguoiDung = req.params.idNguoiDung;
+  const idTheoDoi = mongo.Schema.Types.ObjectId(req.params.idTheoDoi);
+  const idNguoiDung = mongo.Schema.Types.ObjectId(req.params.idNguoiDung);
   const trangThai = req.query.trangThai;
 
   try {
@@ -632,11 +612,10 @@ router.get("/getxoabanbe/:idTheoDoi/idNguoiDung", async (req,res) => {
   }
 });
 
-router.get('/getdanhSachNguoiDung', async function (req, res) {
-  const hoTen = req.query.get('hoTen');
-  const hinhAnh = req.query.get('hinhAnh');
-  const danhSachNguoiDung = await NguoiDung.find({ });
-
-});
+// router.get('/getdanhSachNguoiDung', async function (req, res) {
+//   const hoTen = req.query.get('hoTen');
+//   const hinhAnh = req.query.get('hinhAnh');
+//   const danhSachNguoiDung = await NguoiDung.find({ });
+// });
 
 module.exports = router;

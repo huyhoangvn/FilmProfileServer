@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 
 var Thich = new Schema({
     idNguoiDung:  {type: mongoose.Schema.Types.ObjectId, ref:'NguoiDung'},
-    idBaiDang: String,
+    idBaiDang: {type: mongoose.Schema.Types.ObjectId, ref:'BaiDang'},
     trangThai: Number
 });
 
