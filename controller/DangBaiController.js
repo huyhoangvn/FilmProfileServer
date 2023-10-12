@@ -51,12 +51,12 @@ const getBaiDangBanBe = async function (req,res){
           "noiDung" : "$KetQuaBaiDang.noiDung",
           "ngayTao" : { $dateToString: { format: "%d-%m-%Y" , date: "$KetQuaBaiDang.ngayTao"} },
           "hoTenBanBe" : "$KetQuaBanBe.hoTen",
-          "hinhAnhBanBe" : "$KetQuaBanBe.hinhAnh",
+          "hinhAnhBanBe" : { $concat:[req.protocol + "://", req.get("host"), "/public/images/", { $arrayElemAt: ["$KetQuaBanBe.hinhAnh", 0]}]},
           "idPhim" : "$KetQuaDanhGiaPhim.idPhim",
           "yeuThich" : "$KetQuaDanhGiaPhim.yeuThich",
           "danhGia" : "$KetQuaDanhGiaPhim.danhGia",
           "trangThaiXem" : "$KetQuaDanhGiaPhim.trangThaiXem",
-          "hinhAnhPhim" : "$KetQuaDanhGiaPhim.hinhAnh"
+          "hinhAnhPhim" : { $arrayElemAt: ["$KetQuaDanhGiaPhim.hinhAnh", 0] }
         }}
     ]);
 
@@ -103,12 +103,12 @@ const getBaiDangCaNhan = async function (req, res) {
         "noiDung" : "$noiDung",
         "ngayTao" : { $dateToString: { format: "%d-%m-%Y" , date: "$ngayTao"} },
         "hoTen" : "$KetQuaNguoiDung.hoTen",
-        "hinhAnh" : "$KetQuaBanBe.hinhAnh",
+        "hinhAnh" : { $concat:[req.protocol + "://", req.get("host"), "/public/images/", { $arrayElemAt: ["$KetQuaBanBe.hinhAnh", 0]}]},
         "idPhim" : "$KetQuaDanhGiaPhim.idPhim",
         "yeuThich" : "$KetQuaDanhGiaPhim.yeuThich",
         "danhGia" : "$KetQuaDanhGiaPhim.danhGia",
         "trangThaiXem" : "$KetQuaDanhGiaPhim.trangThaiXem",
-        "hinhAnhPhim" : "$KetQuaDanhGiaPhim.hinhAnh"
+        "hinhAnhPhim" : { $arrayElemAt: ["$KetQuaDanhGiaPhim.hinhAnh", 0] }
       }}
     ]);
     res.end(JSON.stringify({
