@@ -56,6 +56,7 @@ const getBaiDangBanBe = async function (req,res){
           "yeuThich" : "$KetQuaDanhGiaPhim.yeuThich",
           "danhGia" : "$KetQuaDanhGiaPhim.danhGia",
           "trangThaiXem" : "$KetQuaDanhGiaPhim.trangThaiXem",
+          "tenPhim" : "$KetQuaDanhGiaPhim.tenPhim",
           "hinhAnhPhim" : { $arrayElemAt: ["$KetQuaDanhGiaPhim.hinhAnh", 0] }
         }}
     ]);
@@ -108,6 +109,7 @@ const getBaiDangCaNhan = async function (req, res) {
         "yeuThich" : "$KetQuaDanhGiaPhim.yeuThich",
         "danhGia" : "$KetQuaDanhGiaPhim.danhGia",
         "trangThaiXem" : "$KetQuaDanhGiaPhim.trangThaiXem",
+        "tenPhim" : "$KetQuaDanhGiaPhim.tenPhim",
         "hinhAnhPhim" : { $arrayElemAt: ["$KetQuaDanhGiaPhim.hinhAnh", 0] }
       }}
     ]);
