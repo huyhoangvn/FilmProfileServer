@@ -609,19 +609,16 @@ router.get("/getxoabanbe/:idTheoDoi/idNguoiDung", async (req,res) => {
   }
 });
 
-router.get('/getdanhSachNguoiDung/NguoiDung', async function (req, res) {
+router.get('/getdanhSachNguoiDungDeKetBan/:idNguoiDung', async function (req, res) {
   const hoTen = req.query.get('hoTen');
   const hinhAnh = req.query.get('hinhAnh');
   try {
-    const danhSachNguoiDung = await NguoiDung.find({ });
+    const danhSachNguoiDung = await NguoiDung.find({ idNguoiDung:idNguoiDung});
     if(danhSachNguoiDung){
       res.status(500).json({ 
         data: {
         id: objId,
         hoTen: hoTen,
-        ngaySinh: "dd-mm-yyyy",
-        gioiTinh: 2,
-        moTa: "gioi thieu",
         hinhAnh:
           req.protocol +
           "://" +
