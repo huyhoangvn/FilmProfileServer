@@ -526,19 +526,30 @@ router.get("/xoaBanbe/:idTheoDoi/idNguoiDung", async (req,res) => {
   }
 });
 
-//Chưa test
-router.get("/getDanhSachBanBe", async (req, res) => {
-  try {
-    const themBanBe = await BanBe.find().populate("idTheoDoi");
-    res.status(200).json(themBanBe);
-  } catch (err) {
-    res.status(500).json({
-      data:{
-
-      }
-    });
-  }
-});
+// router.get('/getdanhSachNguoiDungDeKetBan/:idNguoiDung', async function (req, res) {
+//   const hoTen = req.query.get('hoTen');
+//   const hinhAnh = req.query.get('hinhAnh');
+//   try {
+//     const danhSachNguoiDung = await NguoiDung.find({ idNguoiDung:idNguoiDung});
+//     if(danhSachNguoiDung){
+//       res.status(500).json({ 
+//         data: {
+//         id: objId,
+//         hoTen: hoTen,
+//         hinhAnh:
+//           req.protocol +
+//           "://" +
+//           req.get("host") +
+//           "/public/images/" +
+//           hinhAnh,
+//         trangThai: 1,
+//         },
+//         message: "Thành công",
+//       });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: "Lỗi server: " + error.message });
+//   }
 
 //Lấy danh sách người dùng và hiển thị nếu người dùng đó mình đã theo dõi hay chưa
 //VD: http://localhost:3002/api/getDanhSachTimNguoiDung?timKiemTen=P&trang=1 (Mỗi trang hiển thị 10 người)
