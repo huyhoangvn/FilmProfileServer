@@ -3,11 +3,11 @@ const {ObjectId} = require("mongodb");
 var Schema = mongoose.Schema;
 
 var baiDang = new Schema({
-    idDanhGiaPhim: String,
-    idNguoiDung: String,
+    idDanhGiaPhim: {type: mongoose.Schema.Types.ObjectId, ref:'DanhGiaPhim'},
+    idNguoiDung: {type: mongoose.Schema.Types.ObjectId, ref:'NguoiDung'},
     chuDe:String,
     noiDung:String,
-    ngayTao:String,
+    ngayTao:Date,
     trangThai:Number
 });
 
