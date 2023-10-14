@@ -42,11 +42,11 @@ const getBaiDangBanBe = async function (req,res){
             path: "$KetQuaDanhGiaPhim",
             preserveNullAndEmptyArrays: false
         }},
-        { $sort : 
-          { "KetQuaBaiDang.ngayTao" : -1 } 
+        { $sort :
+          { "KetQuaBaiDang.ngayTao" : -1 }
         },
         {$project : {
-          "idBaiDang": "$_id", 
+          "idBaiDang": "$_id",
           "chuDe" : "$KetQuaBaiDang.chuDe",
           "noiDung" : "$KetQuaBaiDang.noiDung",
           "ngayTao" : { $dateToString: { format: "%d-%m-%Y" , date: "$KetQuaBaiDang.ngayTao"} },
@@ -95,11 +95,11 @@ const getBaiDangCaNhan = async function (req, res) {
         path: "$KetQuaNguoiDung",
         preserveNullAndEmptyArrays: false
       }},
-      { $sort : 
-        { "ngayTao" : -1 } 
+      { $sort :
+        { "ngayTao" : -1 }
       },
       {$project : {
-        "idBaiDang": "$_id", 
+        "idBaiDang": "$_id",
         "chuDe" : "$chuDe",
         "noiDung" : "$noiDung",
         "ngayTao" : { $dateToString: { format: "%d-%m-%Y" , date: "$ngayTao"} },
@@ -119,7 +119,30 @@ const getBaiDangCaNhan = async function (req, res) {
     }));
 }
 
+const ThemBaiDang = async function (req, res) {
+    const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
+    const idDanhGiaPhim = new mongo.Types.ObjectId(req.params.idDanhGiaPhim);
+    const chuDe = req.body.chuDe;
+    const noiDung = req.body.noiDung;
+    const ngayTao = new Date().toISOString();
+
+    const data = await baiDang.create({
+        idNguoiDung:idNguoiDung,
+        idDanhGiaPhim: idDanhGiaPhim,
+        chuDe:chuDe,
+        noiDung:noiDung,
+        ngayTao:ngayTao,
+        trangThai : 1,
+    })
+
+    res.end(JSON.stringify({
+        data,
+        message:'Thêm bài đăng thành công'
+    }));
+}
+
 module.exports = {
     getBaiDangBanBe,
-    getBaiDangCaNhan
+    getBaiDangCaNhan,
+    ThemBaiDang
 }
