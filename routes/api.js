@@ -498,7 +498,7 @@ router.get("/themBanBe/:idNguoiDung", async function (req, res) {
 });
 
 //Chưa test
-router.get("/xoaBanbe/:idTheoDoi/idNguoiDung", async (req,res) => {
+router.get("/xoaBanbe/:idTheoDoi/:idNguoiDung", async (req,res) => {
   const idTheoDoi = new mongo.Types.ObjectId(req.params.idTheoDoi);
   const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
   const trangThai = req.query.trangThai;
