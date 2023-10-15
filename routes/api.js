@@ -14,7 +14,7 @@ const BanBe = require('../database/BanBe');
 const Thich = require('../database/Thich');
 //Controller
 const {getBaiDangBanBe, getBaiDangCaNhan,ThemBaiDang} = require('../controller/DangBaiController');
-const {ThemLike, XoaLike} = require("../controller/LikeController");
+const {ThemLike, XoaLike, GetAllLike} = require("../controller/LikeController");
 const {ThemTaiKhoan, DangNhap, GetThongTinCaNhan} = require("../controller/NguoiDungController");
 const {ThemPhim, IsPhimTrongDanhSach, XoaKhoiDanhSach, GetDiemDanhGia, GetDanhSach, SuaDanhGia} = require("../controller/PhimController");
 const {ThemBanBe, XoaBanBe, GetDanhSachTimNguoiDung, IsTheoDoi} = require("../controller/BanBeController");
@@ -199,5 +199,9 @@ router.post('/themLike/:idNguoiDung/:idBaiDang', ThemLike);
 //api xoa-like
 //VD: http://localhost:3002/api/xoaLike/6523a07b075e06d97c19dda0/6523a035075e06d97c19dd9d
 router.get('/xoaLike/:idNguoiDung/:idBaiDang', XoaLike);
+
+//api getAllLike
+//http://localhost:3002/api/getAllLike/65280d389853ef2ecd3c9020
+router.get('/getAllLike/:idBaiDang', GetAllLike);
 
 module.exports = router;
