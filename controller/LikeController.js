@@ -32,7 +32,39 @@ const XoaLike = async function (req, res) {
     }));
 }
 
+const GetAllLike = async function (req, res, next) {
+    const id = new mongo.Types.ObjectId(req.params.idBaiDang);
+    let data = 0;
+    const query = await Thich
+        .aggregate([
+            {
+                $match: {
+                    idBaiDang: id,
+                    trangThai: 1
+                },
+            },
+            {
+                $count: "tong"
+            }
+        ])
+        .then((result) => {
+            if (result.length > 0) {
+                data = result[0].tong
+            }
+        });
+
+
+
+    res.end(
+        JSON.stringify({
+            data,
+            message: "Thành công",
+        })
+    );
+}
+
 module.exports = {
     ThemLike,
-    XoaLike
+    XoaLike,
+    GetAllLike
 }
