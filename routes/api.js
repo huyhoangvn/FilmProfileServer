@@ -186,7 +186,7 @@ router.get("/xoaBanbe/:idTheoDoi/idNguoiDung", XoaBanBe);
 
 //Lấy danh sách người dùng và hiển thị nếu người dùng đó mình đã theo dõi hay chưa
 //VD: http://localhost:3002/api/getDanhSachTimNguoiDung?timKiemTen=P&trang=1 (Mỗi trang hiển thị 10 người)
-router.get('/getDanhSachTimNguoiDung', GetDanhSachTimNguoiDung);
+router.get('/getDanhSachTimNguoiDung/:idNguoiDung', GetDanhSachTimNguoiDung);
 
 //Kiểm tra xem người dùng có thuộc danh sách kết bạn của người dùng hiện tại hay không
 //VD: http://localhost:3002/api/isTheoDoi/6523a07b075e06d97c19dda0/6523a035075e06d97c19dd9d

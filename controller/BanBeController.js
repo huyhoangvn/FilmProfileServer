@@ -68,6 +68,7 @@ const GetDanhSachTimNguoiDung = async function (req, res) {
     const trang = req.query.trang;
     var data = await NguoiDung.aggregate([
         {$match: {
+                _id: {$not: {$eq: idNguoiDung}},
                 hoTen: {$regex: timKiemTen},
                 trangThai: 1
             }},
@@ -77,6 +78,35 @@ const GetDanhSachTimNguoiDung = async function (req, res) {
         {
             $limit: 10,
         },
+        {$lookup: {
+            from: "BanBe",
+            localField: "_id",
+            foreignField: "idTheoDoi",
+            pipeline: [
+                { $match: { "idNguoiDung": idNguoiDung } }
+            ],
+            as: "KetQuaBanBe"
+        }},
+        {   
+            $addFields: 
+            {
+                trangThaiKetBan: 
+                    {
+                        $cond: {if: {"$eq": [{ $size:"$KetQuaBanBe" }, 0]}, 
+                        then: false, 
+                        else: true }
+                    }
+            }  
+        }, 
+        {
+            $project : {
+                "hoTen" : "$hoTen",
+                "ngaySinh": "$ngaySinh",
+                "moTa": "$moTa",
+                "hinhAnh" : { $concat:[req.protocol + "://", req.get("host"), "/public/images/", { $arrayElemAt: ["$hinhAnh", 0]}]},
+                "trangThaiKetBan": "$trangThaiKetBan"
+            }
+        }
     ]);
     res.end(JSON.stringify({
         data,
