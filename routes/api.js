@@ -154,10 +154,10 @@ router.get('/getBaiDangCaNhan/:idNguoiDung', getBaiDangCaNhan);
 router.get('/getBaiDangBanBe/:idNguoiDung', getBaiDangBanBe);
 
 //Chưa test
-router.get("/themBanBe/:idNguoiDung", ThemBanBe);
+router.get("/themBanBe/:idNguoiDung/:idTheoDoi", ThemBanBe);
 
 //Chưa test
-router.get("/xoaBanbe/:idTheoDoi/idNguoiDung", XoaBanBe);
+router.get("/xoaBanbe/:idNguoiDung/:idTheoDoi", XoaBanBe);
 
 
 //Lấy danh sách người dùng và hiển thị nếu người dùng đó mình đã theo dõi hay chưa
