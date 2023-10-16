@@ -154,18 +154,11 @@ const IsTheoDoi = async function (req, res) {
 
 const GetDanhSachBanBe = async function (req, res) {
     const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
-    const trang = req.query.trang;
     var data = await BanBe.aggregate([
         {$match: {
                 idNguoiDung: {$eq: idNguoiDung},
                 trangThai: 1
-            }},
-        {
-            $skip: (trang-1)*10,
-        },
-        {
-            $limit: 10,
-        },
+        }},
         {$lookup: {
             from: "NguoiDung",
             localField: "idTheoDoi",
@@ -199,11 +192,50 @@ const GetDanhSachBanBe = async function (req, res) {
     }));
 }
 
+const getSoLuongNguoiTheoDoi = async function (req, res) {
+    const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
+    var data = await BanBe.aggregate([
+        {
+            $match:{
+                idTheoDoi: idNguoiDung,
+                trangThai: 1
+            }
+        },
+        {
+            $count: "SoLuongNguoiTheoDoi"
+        }
+    ])
+    res.end(JSON.stringify({
+        data,
+        message:'Thành công'
+    }));
+}
+
+const getSoLuongTheoDoi = async function (req, res) {
+    const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
+    var data = await BanBe.aggregate([
+        {
+            $match:{
+                idNguoiDung: idNguoiDung,
+                trangThai: 1
+            }
+        },
+        {
+            $count: "SoLuongTheoDoi"
+        }
+    ])
+    res.end(JSON.stringify({
+        data,
+        message:'Thành công'
+    }));
+}
 
 module.exports = {
     ThemBanBe,
     XoaBanBe,
     GetDanhSachTimNguoiDung,
     GetDanhSachBanBe,
-    IsTheoDoi
+    IsTheoDoi,
+    getSoLuongNguoiTheoDoi,
+    getSoLuongTheoDoi
 }
