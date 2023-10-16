@@ -59,13 +59,12 @@ const XoaBanBe = async (req,res) => {
     const idTheoDoi = new mongo.Types.ObjectId(req.params.idTheoDoi);
     const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
 
-
     try {
-        const update = {trang:0}
-        const fifter = { idNguoiDung: idNguoiDung,idTheoDoi:idTheoDoi, trangThai: 1 }
+        const update = { trangThai:0 }
+        const fifter = { idNguoiDung: idNguoiDung , idTheoDoi:idTheoDoi, trangThai: 1 }
         // Truy vấn cơ sở dữ liệu chính xác
-        const themBanBe = await BanBe.findOne(fifter,update,{new:true});
-        if (themBanBe) {
+        const xoaBanBe = await BanBe.findOneAndUpdate(fifter,update,{new:true});
+        if (xoaBanBe) {
             // Thực hiện thao tác xóa ở đây
 
             res.json({

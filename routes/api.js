@@ -153,10 +153,12 @@ router.get('/getBaiDangCaNhan/:idNguoiDung', getBaiDangCaNhan);
 //VD: http://localhost:3002/api/getBaiDangBanBe/6523a07b075e06d97c19dda0
 router.get('/getBaiDangBanBe/:idNguoiDung', getBaiDangBanBe);
 
-//Chưa test
+//Thêm bạn bè vào danh sách
+//VD: http://localhost:3002/api/themBanBe/652ab58d440cfc94ac6f7fb5/6523a035075e06d97c19dd9d
 router.get("/themBanBe/:idNguoiDung/:idTheoDoi", ThemBanBe);
 
-//Chưa test
+//Xóa bạn bè khỏi danh sách
+//VD: http://localhost:3002/api/themBanBe/652ab58d440cfc94ac6f7fb5/6523a035075e06d97c19dd9d
 router.get("/xoaBanbe/:idNguoiDung/:idTheoDoi", XoaBanBe);
 
 
