@@ -104,7 +104,7 @@ const GetDanhSachTimNguoiDung = async function (req, res) {
             localField: "_id",
             foreignField: "idTheoDoi",
             pipeline: [
-                { $match: { "idNguoiDung": idNguoiDung } }
+                { $match: { "idNguoiDung": idNguoiDung, trangThai: 1} }
             ],
             as: "KetQuaBanBe"
         }},
