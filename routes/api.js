@@ -17,7 +17,7 @@ const {getBaiDangBanBe, getBaiDangCaNhan,ThemBaiDang} = require('../controller/D
 const {ThemLike, XoaLike, GetAllLike} = require("../controller/LikeController");
 const {ThemTaiKhoan, DangNhap, GetThongTinCaNhan} = require("../controller/NguoiDungController");
 const {ThemPhim, IsPhimTrongDanhSach, XoaKhoiDanhSach, GetDiemDanhGia, GetDanhSach, SuaDanhGia} = require("../controller/PhimController");
-const {ThemBanBe, XoaBanBe, GetDanhSachTimNguoiDung, IsTheoDoi, GetDanhSachBanBe} = require("../controller/BanBeController");
+const {ThemBanBe, XoaBanBe, GetDanhSachTimNguoiDung, IsTheoDoi, GetDanhSachBanBe, getSoLuongNguoiTheoDoi, getSoLuongTheoDoi} = require("../controller/BanBeController");
 
 
 //api đăng kí
@@ -173,6 +173,14 @@ router.get('/getDanhSachBanBe/:idNguoiDung', GetDanhSachBanBe);
 //Kiểm tra xem người dùng có thuộc danh sách kết bạn của người dùng hiện tại hay không
 //VD: http://localhost:3002/api/isTheoDoi/6523a07b075e06d97c19dda0/6523a035075e06d97c19dd9d
 router.get('/isTheoDoi/:idNguoiDungHienTai/:idNguoiDungBatKy', IsTheoDoi);
+
+//Số lượt được theo dõi
+//VD: http://localhost:3002/api/getSoLuongNguoiTheoDoi/6523a035075e06d97c19dd9d
+router.get('/getSoLuongNguoiTheoDoi/:idNguoiDung', getSoLuongNguoiTheoDoi);
+
+//Số lượt theo dõi bạn bè
+//VD: http://localhost:3002/api/getSoLuongTheoDoi/6523a035075e06d97c19dd9d
+router.get('/getSoLuongTheoDoi/:idNguoiDung', getSoLuongTheoDoi);
 
 //api them-like
 //VD: http://localhost:3002/api/themLike/6523a07b075e06d97c19dda0/6523a035075e06d97c19dd9d
