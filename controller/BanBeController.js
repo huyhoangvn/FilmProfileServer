@@ -6,43 +6,65 @@ const BanBe = require("../database/BanBe");
 const Thich = require("../database/Thich");
 
 const ThemBanBe = async function (req, res) {
-    const idTheoDoi = new mongo.Types.ObjectId(req.params.idTheoDoi);
-    const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
-    var themBanBe = await NguoiDung.findOne(
-        NguoiDung.where({ idNguoiDung: idNguoiDung, trangThai: 1 })
-    );
-    if (themBanBe == null) {
-        await NguoiDung.create({
+    try {
+        const idTheoDoi = new mongo.Types.ObjectId(req.params.idTheoDoi);
+        const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
+        
+       
+      
+        const existingUser = await BanBe.findOne({
+            idTheoDoi: idTheoDoi,
+            idNguoiDung: idNguoiDung,   
+        });
+         
+        if (existingUser) {
+          if(existingUser.trangThai == 1){
+            return res.end(JSON.stringify({ data: {}, message: "Tài khoản đã tồn tại" }));
+          }
+          else if(existingUser.trangThai == 0){
+            const update = {trangThai:1}
+            var data = await BanBe.findOneAndUpdate(existingUser,update);
+            res.end(
+              JSON.stringify({
+              data,
+               message: "Sửa thành công",
+              }));
+          }
+        } else {
+          const newFriend = await BanBe.create({
             idTheoDoi: idTheoDoi,
             idNguoiDung: idNguoiDung,
             trangThai: 1,
-        }).then((result) => {
-            id = result._id;
-        });
-        res.end(
-            JSON.stringify({
-                data: {
-                    idTheoDoi: idTheoDoi,
-                    idNguoiDung: idNguoiDung,
-                    trangThai: 1,
-                },
-                message: "Ket ban thanh cong",
-            })
-        );
-    } else {
-        res.end(JSON.stringify({ data: {}, message: "Tài khỏan đã tồn tại" }));
+          });
+    
+          const result = {
+              data: {
+                  idTheoDoi: newFriend.idTheoDoi,
+                  idNguoiDung: newFriend.idNguoiDung,
+                  trangThai: newFriend.trangThai,
+              },
+              message: "Kết bạn thành công",
+          };
+    
+          return res.end(JSON.stringify(result));
+        }
+    
+        
+    } catch (error) {
+        return res.status(500).end(JSON.stringify({ message: "Đã xảy ra lỗi không mong muốn" }));
     }
 }
 
 const XoaBanBe = async (req,res) => {
     const idTheoDoi = new mongo.Types.ObjectId(req.params.idTheoDoi);
     const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
-    const trangThai = req.query.trangThai;
+
 
     try {
+        const update = {trang:0}
+        const fifter = { idNguoiDung: idNguoiDung,idTheoDoi:idTheoDoi, trangThai: 1 }
         // Truy vấn cơ sở dữ liệu chính xác
-        const themBanBe = await NguoiDung.findOne({ idNguoiDung: idNguoiDung, trangThai: 0 });
-
+        const themBanBe = await BanBe.findOne(fifter,update,{new:true});
         if (themBanBe) {
             // Thực hiện thao tác xóa ở đây
 
