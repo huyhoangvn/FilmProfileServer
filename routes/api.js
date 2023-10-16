@@ -17,7 +17,7 @@ const {getBaiDangBanBe, getBaiDangCaNhan,ThemBaiDang} = require('../controller/D
 const {ThemLike, XoaLike, GetAllLike} = require("../controller/LikeController");
 const {ThemTaiKhoan, DangNhap, GetThongTinCaNhan} = require("../controller/NguoiDungController");
 const {ThemPhim, IsPhimTrongDanhSach, XoaKhoiDanhSach, GetDiemDanhGia, GetDanhSach, SuaDanhGia} = require("../controller/PhimController");
-const {ThemBanBe, XoaBanBe, GetDanhSachTimNguoiDung, IsTheoDoi} = require("../controller/BanBeController");
+const {ThemBanBe, XoaBanBe, GetDanhSachTimNguoiDung, IsTheoDoi, GetDanhSachBanBe} = require("../controller/BanBeController");
 
 
 //api đăng kí
@@ -159,34 +159,14 @@ router.get("/themBanBe/:idNguoiDung", ThemBanBe);
 //Chưa test
 router.get("/xoaBanbe/:idTheoDoi/idNguoiDung", XoaBanBe);
 
-// router.get('/getdanhSachNguoiDungDeKetBan/:idNguoiDung', async function (req, res) {
-//   const hoTen = req.query.get('hoTen');
-//   const hinhAnh = req.query.get('hinhAnh');
-//   try {
-//     const danhSachNguoiDung = await NguoiDung.find({ idNguoiDung:idNguoiDung});
-//     if(danhSachNguoiDung){
-//       res.status(500).json({
-//         data: {
-//         id: objId,
-//         hoTen: hoTen,
-//         hinhAnh:
-//           req.protocol +
-//           "://" +
-//           req.get("host") +
-//           "/public/images/" +
-//           hinhAnh,
-//         trangThai: 1,
-//         },
-//         message: "Thành công",
-//       });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ message: "Lỗi server: " + error.message });
-//   }
 
 //Lấy danh sách người dùng và hiển thị nếu người dùng đó mình đã theo dõi hay chưa
-//VD: http://localhost:3002/api/getDanhSachTimNguoiDung?timKiemTen=P&trang=1 (Mỗi trang hiển thị 10 người)
+//VD: http://localhost:3002/api/getDanhSachTimNguoiDung/6523a07b075e06d97c19dda0?timKiemTen=P&trang=1 (Mỗi trang hiển thị 10 người)
 router.get('/getDanhSachTimNguoiDung/:idNguoiDung', GetDanhSachTimNguoiDung);
+
+//Lấy danh sách bạn bè mình đã theo dõi
+//VD: http://localhost:3002/api/getDanhSachBanBe/6523a07b075e06d97c19dda0?trang=1 (Mỗi trang hiển thị 10 người)
+router.get('/getDanhSachBanBe/:idNguoiDung', GetDanhSachBanBe);
 
 //Kiểm tra xem người dùng có thuộc danh sách kết bạn của người dùng hiện tại hay không
 //VD: http://localhost:3002/api/isTheoDoi/6523a07b075e06d97c19dda0/6523a035075e06d97c19dd9d
