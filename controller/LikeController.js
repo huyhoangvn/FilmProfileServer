@@ -8,15 +8,28 @@ const Thich = require("../database/Thich");
 const ThemLike = async function (req, res) {
     const idNguoiDung = new mongo.Types.ObjectId(req.params.idNguoiDung);
     const idBaiDang = new mongo.Types.ObjectId(req.params.idBaiDang);
-    const data = await Thich.create({
-        idNguoiDung:idNguoiDung,
-        idBaiDang: idBaiDang,
-        trangThai : 1,
-    })
+    let data;
+    let message = "";
+    const result = await Thich.find({idNguoiDung:idNguoiDung, idBaiDang: idBaiDang});
+    if(result){
+        if(result[0].trangThai == 0){
+            data = await Thich.findOneAndUpdate({idNguoiDung:idNguoiDung, idBaiDang: idBaiDang}, {trangThai:1}, {new: true});
+            message = "Thích thành công";
+        } else {
+            message = "Đã thích";
+        }
+    } else {
+        data = await Thich.create({
+            idNguoiDung:idNguoiDung,
+            idBaiDang: idBaiDang,
+            trangThai : 1,
+        })
+        message = "Thích thành công";
+    }
 
     res.end(JSON.stringify({
         data,
-        message:'Like thành công'
+        message:message
     }));
 }
 const XoaLike = async function (req, res) {
