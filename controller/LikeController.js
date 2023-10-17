@@ -11,7 +11,7 @@ const ThemLike = async function (req, res) {
     let data;
     let message = "";
     const result = await Thich.find({idNguoiDung:idNguoiDung, idBaiDang: idBaiDang});
-    if(result){
+    if(result.length > 0){
         if(result[0].trangThai == 0){
             data = await Thich.findOneAndUpdate({idNguoiDung:idNguoiDung, idBaiDang: idBaiDang}, {trangThai:1}, {new: true});
             message = "Thích thành công";
