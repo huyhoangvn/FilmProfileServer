@@ -46,7 +46,8 @@ const getBaiDangBanBe = async function (req,res){
           { "KetQuaBaiDang.ngayTao" : -1 }
         },
         {$project : {
-          "idBaiDang": "$_id",
+          "_id" : "$KetQuaBaiDang._id",
+          "idBaiDang": "$KetQuaBaiDang._id",
           "chuDe" : "$KetQuaBaiDang.chuDe",
           "noiDung" : "$KetQuaBaiDang.noiDung",
           "ngayTao" : { $dateToString: { format: "%d-%m-%Y" , date: "$KetQuaBaiDang.ngayTao"} },
