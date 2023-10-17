@@ -100,7 +100,7 @@ const getBaiDangCaNhan = async function (req, res) {
         { "ngayTao" : -1 }
       },
       {$project : {
-        "idBaiDang": "$_id",
+        "idBaiDang": "$idBaiDang",
         "chuDe" : "$chuDe",
         "noiDung" : "$noiDung",
         "ngayTao" : { $dateToString: { format: "%d-%m-%Y" , date: "$ngayTao"} },
