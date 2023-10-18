@@ -105,7 +105,7 @@ const getBaiDangCaNhan = async function (req, res) {
         "noiDung" : "$noiDung",
         "ngayTao" : { $dateToString: { format: "%d-%m-%Y" , date: "$ngayTao"} },
         "hoTen" : "$KetQuaNguoiDung.hoTen",
-        "hinhAnh" : { $concat:[req.protocol + "://", req.get("host"), "/public/images/", { $arrayElemAt: ["$KetQuaBanBe.hinhAnh", 0]}]},
+        "hinhAnh" : { $concat:[req.protocol + "://", req.get("host"), "/public/images/", { $arrayElemAt: ["$KetQuaNguoiDung.hinhAnh", 0]}]},
         "idPhim" : "$KetQuaDanhGiaPhim.idPhim",
         "yeuThich" : "$KetQuaDanhGiaPhim.yeuThich",
         "danhGia" : "$KetQuaDanhGiaPhim.danhGia",
