@@ -3,7 +3,7 @@
 
 1.
 Công cụ và công nghệ sử dụng:
-+React Native thiết kế client app
++React Native thiết kế client app<br>
 +Nodejs, Mongodb thiết kế server và tạo hệ cơ sở dữ liệu
 +Glitch.comm để host server.
 +TMDB api để lấy dữ liệu thông tin phim.
